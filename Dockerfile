@@ -2,7 +2,7 @@
 # FROM ubuntu:trusty
 FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
-
+ARG daemon_directory=/daemon 
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
@@ -99,6 +99,59 @@ RUN  cd /bde/BDEEventDetection; \
 
 
 # RUN echo 'Building components... Done.'
+
+
+### Daemon interface
+####################
+
+# declare and set environment variables required for interaction with the 
+# init daemon to their default values. Stepname can/will be set at the 
+# daemonInterface.sh (TBD)
+
+ENV ENABLE_INIT_DAEMON true
+ENV INIT_DAEMON_BASE_URI http://identifier/init-daemon
+ENV INIT_DAEMON_STEP default_step_name
+
+# make a dedicated directory for the daemon interface and a mount point
+# daemon scripts will be placed there. Is a build arg (default=/daemon).
+# also add the daemon_directory name to /home keep track of the location in a 
+# built image 
+RUN echo "Daemon dir is $daemon_directory" > /home/daemonDirLoc
+ENV DAEMON_DIR $daemon_directory
+RUN mkdir $daemon_directory
+
+# copy the main script that will manage the interface with the remote daemon
+# and the query scripts the perform the querying at each stage
+# run your work right after the execute-step.sh call
+
+COPY wait-for-step.sh $daemon_directory/
+COPY execute-step.sh $daemon_directory/
+COPY finish-step.sh $daemon_directory/
+COPY daemonInterface.sh $daemon_directory/
+
+# set the executable bit for the scripts
+RUN chmod +x $daemon_directory/*.sh
+
+# set sleep times for wait - execute - finish daemon probe scripts
+ENV SLEEP_WAIT 1
+ENV SLEEP_EXEC 1 
+ENV SLEEP_FINISH 1
+
+#### Testing:
+# To override the default daemon URI ( e.g. for testing purposes ),
+# you can  add a override file with another address. 
+# Mount as data volume to the following mount point and write in it 
+# the override  daemon address.
+
+RUN mkdir $daemon_directory/mnt
+ENV DAEMON_INFO_FILE $daemon_directory/mnt/daemoninfo
+
+
+# install dependencies: curl for making http requests.
+RUN apt-get install -y curl
+
+### End of Daemon interface
+###########################
 
 
  
