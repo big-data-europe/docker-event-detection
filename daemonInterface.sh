@@ -1,48 +1,53 @@
 !/#bin/bash
-echo "Running run.sh script."
+echo "Running daemon interface script."
 
-# check wether env. var of host URI is set.
-# if not, assign a flag value
+
 echo "Resolving the daemon's address."
 echo  "----------------------------------"
 INIT_DAEMON_BASE_URI="${INIT_DAEMON_BASE_URI:-"UNSET"}"
 
+# Check whether the env. var is set and notify.
 if [   $INIT_DAEMON_BASE_URI = "UNSET" ] ; then
 	echo "INIT_DAEMON_BASE_URI is unset."
 else
-	echo "INIT_DAEMON_BASE_URI is set to [$INIT_DAEMON_BASE_URI] from environment var."
+	echo "INIT_DAEMON_BASE_URI initially set to [$INIT_DAEMON_BASE_URI] from environment var."
 fi
 
+# Check whether we need to override the environment variable.
 echo "Checking daemon information file env var."
+
 # check wether the DAEMON_INFO_FILE var with daemon information is set
-# this overrides the environment variable.
 DAEMON_INFO_FILE="${DAEMON_INFO_FILE:-"UNSET"}"
 if [ $DAEMON_INFO_FILE = "UNSET" ] ; then
 	echo "The DAEMON_INFO_FILE variable is not set."
 fi
 
-# check wether the file was indeed supplied in the container and set it.
-echo "Checking supplied file at [$DAEMON_INFO_FILE]."
+# Check wether a file was indeed supplied in the container, at the
+# location specified by DAEMON_INFO_FILE.
+echo "Checking for override file at [$DAEMON_INFO_FILE]."
 if [ ! -f $DAEMON_INFO_FILE ] ; then
-	echo "File $DAEMON_INFO_FILE does not exist."
+	echo "Override file $DAEMON_INFO_FILE does not exist."
 else
 	# purge whitespace and set
 	INIT_DAEMON_BASE_URI=$( cat $DAEMON_INFO_FILE | tr -d " \n\t\r")
-	echo "INIT_DAEMON_BASE_URI set to [$INIT_DAEMON_BASE_URI] from supplied file."
-	# TODO check for correct IP+port structure
+	echo "INIT_DAEMON_BASE_URI set to [$INIT_DAEMON_BASE_URI] from supplied override file."
+	# TODO check for correct address  (IP+port) structure
 	# or, later, for correct http addr structure
 fi
 	
 if [   $INIT_DAEMON_BASE_URI = "UNSET" ] ; then
 	(>&2 echo "Failed to initialize remote daemon's address!.")
-	(>&2 echo "You need to supply the daemon's address either by setting INIT_DAEMON_BASE_URI.")
-	(>&2 echo "Or by writing it in a file, mounted on the container and set the path to DAEMON_INFO_FILE.")
+	(>&2 echo "You need to supply the daemon's address either by setting a default INIT_DAEMON_BASE_URI,")
+	(>&2 echo "Or by writing the address to an override file, ")
+	(>&2 echo "mounted on the container and set the path to DAEMON_INFO_FILE.")
 	exit
 fi
 	
 echo  "----------------------------------"
 
+
 export INIT_DAEMON_BASE_URI
+# Maybe you want to set the step name
 #INIT_DAEMON_STEP="TEST_STEP"
 echo 
 echo "Running step $INIT_DAEMON_STEP."
