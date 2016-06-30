@@ -1,9 +1,4 @@
-
-#!/bin/bash
-
-# Added -d "" to curl to avoid the 411 Length Required error - this however
-# causes the server to respond with code 200
-
+#!/usr/bin/env bash
 
 if [ $ENABLE_INIT_DAEMON = "true" ]
    then

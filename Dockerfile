@@ -2,7 +2,7 @@
 # FROM ubuntu:trusty
 FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
-ARG daemon_directory=/daemon 
+ARG daemon_directory="/daemon"
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
@@ -103,7 +103,7 @@ RUN  cd /bde/BDEEventDetection; \
 
 ### Daemon interface
 ####################
-
+RUN echo "Setting up the init-daemon interface."
 # declare and set environment variables required for interaction with the 
 # init daemon to their default values. Stepname can/will be set at the 
 # daemonInterface.sh (TBD)
@@ -150,6 +150,7 @@ ENV DAEMON_INFO_FILE $daemon_directory/mnt/daemoninfo
 # install dependencies: curl for making http requests.
 RUN apt-get install -y curl
 
+RUN echo "init-daemon interface setup complete."
 ### End of Daemon interface
 ###########################
 

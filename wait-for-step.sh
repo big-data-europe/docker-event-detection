@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ $ENABLE_INIT_DAEMON = "true" ]
    then
