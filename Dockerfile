@@ -118,7 +118,7 @@ ENV INIT_DAEMON_STEP default_step_name
 # built image 
 RUN echo "Daemon dir is $daemon_directory" > /home/daemonDirLoc
 ENV DAEMON_DIR $daemon_directory
-RUN mkdir $daemon_directory
+RUN mkdir -p $daemon_directory
 
 # copy the main script that will manage the interface with the remote daemon
 # and the query scripts the perform the querying at each stage
