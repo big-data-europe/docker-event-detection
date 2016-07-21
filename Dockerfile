@@ -3,6 +3,7 @@
 FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
 ARG daemon_directory="/daemon"
+ARG config_file=""
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
