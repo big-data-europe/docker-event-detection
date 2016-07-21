@@ -11,7 +11,7 @@ if [ $ENABLE_INIT_DAEMON = "true" ]
            printf "finish : Got back string : [%s]\n" $string
 
            [ "$string" = "204" ] && break
-           printf "sleeping\n"
+           printf "sleeping for %d seconds.\n" $SLEEP_FINISH
        done
        echo "Notified finish of step ${INIT_DAEMON_STEP}"
 fi

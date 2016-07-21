@@ -12,7 +12,7 @@ if [ $ENABLE_INIT_DAEMON = "true" ]
 
            [ "$string" = "204" ] && break;
 
-           printf "sleeping\n"
+           printf "sleeping for %d seconds.\n" $SLEEP_EXEC
        done
        echo "Notified execution of step ${INIT_DAEMON_STEP}"
 fi

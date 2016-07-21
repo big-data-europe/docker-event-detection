@@ -116,7 +116,7 @@ ENV INIT_DAEMON_STEP default_step_name
 # daemon scripts will be placed there. Is a build arg (default=/daemon).
 # also add the daemon_directory name to /home keep track of the location in a 
 # built image 
-RUN echo "Daemon dir is $daemon_directory" > /home/daemonDirLoc
+RUN echo "$daemon_directory" > /home/daemonDirLoc
 ENV DAEMON_DIR $daemon_directory
 RUN mkdir -p $daemon_directory
 
