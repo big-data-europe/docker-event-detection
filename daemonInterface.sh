@@ -39,7 +39,7 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	fi
 		
 	if [   $INIT_DAEMON_BASE_URI = "UNSET" ] ; then
-		(>&2 echo "Failed to initialize remote daemon's address!.")
+		(>&2 echo "Failed to initialize remote daemon's address!")
 		(>&2 echo "You need to supply the daemon's address either by setting a default INIT_DAEMON_BASE_URI,")
 		(>&2 echo "Or by writing the address to an override file, ")
 		(>&2 echo "mounted on the container and set the path to DAEMON_INFO_FILE.")
@@ -54,13 +54,19 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	#INIT_DAEMON_STEP="TEST_STEP"
 	echo 
 	echo "Running step $INIT_DAEMON_STEP."
-	echo
 
 	# get permission to initialize
 	echo
 	echo "Daemon - validation:"
 	$DAEMON_DIR/wait-for-step.sh
 	
+	# put initialization code of the container here
+	# dummy run
+	echo "Here the container should initialize, if needed."
+	echo "Sleeping for 2s"
+	sleep 2
+	echo
+
 	# notify execution
 	echo
 	echo "Daemon - execution:"
@@ -68,13 +74,27 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 
 	
 	echo
+else
+	# if the init daemon is disabled, initialize here instead.
+	# put initialization code of the container here
+	# dummy run
+	echo "Daemon interface is disabled"
+	echo "Here the container should initialize, if needed."
+	echo "Sleeping for 2s"
+	sleep 2
+	echo
+
 fi
-# put execution code of the docker file here
+
+
+# put execution code of the container here
 # dummy run
 echo "Here the container should run its task."
 echo "Sleeping for 2s"
 sleep 2
 echo
+
+# notify end of execution
 
 if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	echo "Daemon - finish:"
