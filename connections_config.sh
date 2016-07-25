@@ -2,11 +2,12 @@
 
 # Script to set cassandra connection host, port and twitter credentials
 # to the relevant BDE Event detection pilot configuration files.
-# expected arguments: configurationFilePath
+# expected arguments: path to an input file
 
-# format expected in the file:
+# the input file should contain two lines, as below:
 # twitterConsumerKey twitterConsumerKeySecret twitterAccessTokken twitterAccessTokkenSecret
 # host port
+
 function usage {
 	echo
 	echo "Connection configuration 2-line file format:"
@@ -17,7 +18,7 @@ function usage {
 
 echo "Setting cassandra connection parameters and twitter credentials."
 
-# defaults
+# defaults. Twitter default credentials will obviously not work.
 twitterConsumerKey="defaultConsumerKey"
 twitterConsumerKeySecret="defaultConsumerKeySecret"
 twitterAccessTokken="defaultAccessToken"
@@ -25,21 +26,19 @@ twitterAccessTokkenSecret="defaultAccessTokenSecret"
 connectionIP="127.0.0.1"
 connectionPort="9042"
 
-# should happen only due to cosmic radiation flipping bits in ram
-# or due to calling this script out of context
+# errors below should happen only when calling this script out of context
 if [ $# -ne 1 ]; then
 	>&2 echo "$0 needs exactly one argument."
 	usage
 	exit 1
 fi
-# cosmic radiation also 
 if [ -z $1 ]; then
 	>&2 echo "Unset argument variable to $0"
 	usage
 	exit 1
 fi
 
-# no file provided
+# no file provided, use defaults
 if [ ! -f $1 ]; then
 	>&2 echo "Warning:The configuration file $1 does not exist."
 	echo "Using default values for the cassandra ip/port and twitter credentials:"
