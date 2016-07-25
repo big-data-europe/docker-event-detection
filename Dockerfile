@@ -3,7 +3,7 @@
 FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
 ARG daemon_directory="/daemon"
-ARG config_file=""
+ARG connections_config_file="connections_config.txt"
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
@@ -69,17 +69,24 @@ RUN echo 'Adding custom NewSum components... Done.'
 
 
 # Update setting files
-RUN echo 'Updating setting files...'
-# Twitter
-RUN sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDETwitterListener/res/twitter.properties && \
-# RSS
-  sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties  &&\
-# Clustering
-  sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDECLustering/res/clustering.properties  &&\
-# Location extraction
-  sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties;
 
-RUN echo 'Updating setting files... Done.'
+
+
+RUN echo -n 'Updating setting files...'
+COPY connections_config.sh /connections_config.sh
+COPY $connections_config_file /conn_config_file
+RUN bash /connections_config.sh /conn_config_file \
+    && echo "Done updating settings files."
+# Twitter
+#RUN sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDETwitterListener/res/twitter.properties && \
+# RSS
+  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties  &&\
+# Clustering
+  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDECLustering/res/clustering.properties  &&\
+# Location extraction
+  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties;
+
+#RUN echo 'Updating setting files... Done.'
 
 RUN echo 'Building system...'
 
