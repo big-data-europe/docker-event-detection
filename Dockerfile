@@ -1,14 +1,14 @@
 # Pull base image.
 # FROM ubuntu:trusty
-FROM maven:3-jdk-8
+FROM bdebase
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
 ARG daemon_directory="/daemon"
-ARG connections_config_file="connections_config.txt"
+ARG connections_config_filename="/mnt/connections.conf"
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
 # Install main apt utils
-RUN apt-get update 
+#RUN apt-get update 
 #apt-get install -y \
 #software-properties-common
 
@@ -27,22 +27,15 @@ RUN apt-get update
 # Define commonly used JAVA_HOME variable
 #ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
-#RUN echo 'Getting java 8... Done.'
 
 # Get build tools
-RUN echo 'Getting git...'
-RUN apt-get install -y git
-  
-RUN echo 'Getting maven and git... Done.'
+
 
 # Make and define working directory.
-RUN mkdir -p /bde
+ENV BDEROOT "/bde"
+RUN mkdir -p $BDEROOT
 
-# Bring BDE components
-RUN echo 'Getting components...'
-RUN cd /bde; \
-git clone https://github.com/ggianna/bde-event-detection-sc7.git BDEEventDetection/
-RUN echo 'Getting components... Done.'
+
 
 # RUN echo 'Adding custom NewSum components...'
 # ADD NewSumClusterer/ ~/.m2/repository/org/scify/NewSumClusterer/
@@ -61,53 +54,48 @@ ADD bde-mvn-settings.xml /root/.m2/settings.xml
 # ADD registerNSComponents.sh /bde/
 # RUN ["/bin/bash", "/bde/registerNSComponents.sh"]
 
-RUN echo 'Adding custom NewSum components... Done.'
-
-# DEBUG LINES
-# RUN ls -l /bde/
-# RUN ls -l /bde/BDEEventDetection/
 
 
-# Update setting files
 
-
+COPY initialize.sh /initialize.sh
 
 RUN echo -n 'Updating setting files...'
 COPY connections_config.sh /connections_config.sh
-COPY $connections_config_file /conn_config_file
-RUN bash /connections_config.sh /conn_config_file \
+
+RUN bash /connections_config.sh $connections_config_file \
     && echo "Done updating settings files."
-# Twitter
-#RUN sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDETwitterListener/res/twitter.properties && \
-# RSS
-  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties  &&\
-# Clustering
-  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDECLustering/res/clustering.properties  &&\
-# Location extraction
-  #sed -i 's/cassandra_hosts = 127[.]0[.]0[.]1/cassandra_hosts = ${CASSANDRA_IPS}/' /bde/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties;
 
-#RUN echo 'Updating setting files... Done.'
 
-RUN echo 'Building system...'
 
-# RUN echo 'Building components...'
-# RUN cd /bde/BDEEventDetection/BDEBase; \
-#   mvn install;
-# RUN cd /bde/BDEEventDetection/BDETwitterListener; \
-#   mvn install;
-# RUN   cd /bde/BDEEventDetection/BDERSSCrawler; \
-#   mvn install;
-# RUN   cd /bde/BDEEventDetection/BDECLustering; \
-#   mvn install; \
-#   cd /bde/BDEEventDetection/BDELocationExtraction; \
-#   mvn install; \
-  
-RUN  cd /bde/BDEEventDetection; \
-  mvn install;
 
+
+
+# create a mount directory to mount all user-provided resources
+ENV MOUNTDIR /mnt
+RUN mkdir -p $MOUNTDIR
+
+
+# copy the execution scripts for each module
+# and set an environment variabe
+
+ENV EXECDIR="/bdex"
+RUN mkdir "$EXECDIR"
+COPY run.sh runPipeline.sh runNewsCrawling.sh runTwitterCrawling.sh \
+  runLocationExtraction.sh runEventClustering.sh $EXECDIR/
+RUN chmod +x $EXECDIR/*
 
 # RUN echo 'Building components... Done.'
 
+### Scheduling
+##############
+# install cron, start the service 
+# installed in bde-base
+
+# create a crontab file for root
+RUN touch $MOUNTDIR/crontabfile
+RUN crontab $MOUNTDIR/crontabfile
+
+### End of scheduling
 
 ### Daemon interface
 ####################
@@ -116,7 +104,7 @@ RUN echo "Setting up the init-daemon interface."
 # init daemon to their default values. Stepname can/will be set at the 
 # daemonInterface.sh (TBD)
 
-ENV ENABLE_INIT_DAEMON true
+ENV ENABLE_INIT_DAEMON false
 ENV INIT_DAEMON_BASE_URI http://identifier/init-daemon
 ENV INIT_DAEMON_STEP default_step_name
 
@@ -148,19 +136,18 @@ ENV SLEEP_FINISH 1
 #### Testing:
 # To override the default daemon URI ( e.g. for testing purposes ),
 # you can  add a override file with another address. 
-# Mount as data volume to the following mount point and write in it 
+# Mount as data volume to a mount point and write in it 
 # the override  daemon address.
 
-RUN mkdir $daemon_directory/mnt
-ENV DAEMON_INFO_FILE $daemon_directory/mnt/daemoninfo
+
+ENV DAEMON_INFO_FILE $daemon_directory/daemoninfo
 
 
-# install dependencies: curl for making http requests.
-RUN apt-get install -y curl
+
 
 RUN echo "init-daemon interface setup complete."
 ### End of Daemon interface
-###########################
+
 
 
  

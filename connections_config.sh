@@ -16,6 +16,16 @@ function usage {
 	echo
 }
 
+function useDefaults {
+	echo "Using default values for the cassandra ip/port and twitter credentials:"
+	echo "twitterConsumerKey=defaultConsumerKey"
+	echo "twitterConsumerKeySecret=defaultConsumerKeySecret"
+	echo "twitterAccessTokken=defaultAccessToken"
+	echo "twitterAccessTokkenSecret=defaultAccessTokenSecret"
+	echo "cassandraHostIP=127.0.0.1"
+	echo "cassandraPort=9042"
+}
+
 echo "Setting cassandra connection parameters and twitter credentials."
 
 # defaults. Twitter default credentials will obviously not work.
@@ -27,28 +37,18 @@ connectionIP="127.0.0.1"
 connectionPort="9042"
 
 # errors below should happen only when calling this script out of context
-if [ $# -ne 1 ]; then
-	>&2 echo "$0 needs exactly one argument."
-	usage
+if [ -z $BDEROOT ]; then
+	>&2 echo "Warning: Unset BDE root folder variable."
 	exit 1
 fi
 if [ -z $1 ]; then
-	>&2 echo "Unset argument variable to $0"
-	usage
-	exit 1
-fi
+	>&2 echo "Warning: Unset argument variable to $0"
+	useDefaults
 
-# no file provided, use defaults
-if [ ! -f $1 ]; then
-	>&2 echo "Warning:The configuration file $1 does not exist."
-	echo "Using default values for the cassandra ip/port and twitter credentials:"
-	echo "twitterConsumerKey=defaultConsumerKey"
-	echo "twitterConsumerKeySecret=defaultConsumerKeySecret"
-	echo "twitterAccessTokken=defaultAccessToken"
-	echo "twitterAccessTokkenSecret=defaultAccessTokenSecret"
-	echo "cassandraHostIP=127.0.0.1"
-	echo "cassandraPort=9042"
-
+elif  [ ! -f $1 ]; then
+	>&2 echo "Warning: The configuration file $1 does not exist."
+	useDefaults
+	
 else
 	# read the file
 	echo "Using configuration file $1"
@@ -80,24 +80,25 @@ else
 fi
 
 # files to modify
-paths="/bde/BDEEventDetection/BDECLustering/res/clustering.properties"
-paths+=" /bde/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-paths+=" /bde/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
-paths+=" /bde/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
+paths="$BDEROOT/BDEEventDetection/BDECLustering/res/clustering.properties"
+paths+=" $BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+paths+=" $BDEROOT/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
+paths+=" $BDEROOT/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
 # newline-delimit, let's not change IFS
 paths="$(echo $paths | sed  's/ /\n/g' )"
 
 # sed the files with cassandra host/port
-echo "Setting cassandra host-port..."
+echo "Setting cassandra host:[$connectionIP] , port:[$connectionPort]..."
 for f in $paths ; do
 	echo "[$f]"
 	sed -i "s/cassandra_hosts.*/cassandra_hosts=$connectionIP/g" $f
 	sed -i "s/cassandra_port.*/cassandra_port=$connectionPort/g" $f
 done
-echo "Setting twitter credentials..."
+echo "Setting twitter credentials:"
+echo "$twitterConsumerKey $twitterConsumerKeySecret $twitterAccessTokken $twitterAccessTokkenSecret"
 # set the twitter credentials
-sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "/bde/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "/bde/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "/bde/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "/bde/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
 

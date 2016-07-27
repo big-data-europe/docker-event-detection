@@ -63,8 +63,7 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	# put initialization code of the container here
 	# dummy run
 	echo "Here the container should initialize, if needed."
-	echo "Sleeping for 2s"
-	sleep 2
+	echo "Dummy initializing...done"
 	echo
 
 	# notify execution
@@ -80,19 +79,16 @@ else
 	# dummy run
 	echo "Daemon interface is disabled"
 	echo "Here the container should initialize, if needed."
-	echo "Sleeping for 2s"
-	sleep 2
+	echo "Dummy initializing...done"
 	echo
 
 fi
 
 
 # put execution code of the container here
-# dummy run
-echo "Here the container should run its task."
-echo "Sleeping for 2s"
-sleep 2
-echo
+
+$EXECDIR/run.sh $1
+
 
 # notify end of execution
 
