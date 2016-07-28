@@ -65,7 +65,7 @@ ADD bde-mvn-settings.xml /root/.m2/settings.xml
 
 
 # create a mount directory to mount all user-provided resources
-ENV MOUNTDIR /mnt
+ENV MOUNTDIR "/mnt"
 RUN mkdir -p $MOUNTDIR
 
 

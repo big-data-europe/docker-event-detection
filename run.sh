@@ -4,17 +4,20 @@
 # first argument specified scheduled vs single run
 echo "Running BDE Event detection driver script."
 
-tabpath="/root/bdetab"
+singleRunModes="newscrawl twittercrawl location cluster pipeline"
+runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
+
+tabpath="$MOUNTDIR/bdetab"
 function usage {
 	echo "Usage:"
 	echo "$0 [scheduled]"
+	echo "$0 [ $(echo $singleRunModes | sed 's/ / | /g') ]"
 }
 
 bash $EXECDIR/setClassPath.sh
-JARCLASSPATH="$(cat $CLASSPATHFILE)"
+export JARCLASSPATH="$(cat $CLASSPATHFILE)"
 
-singleRunModes="newscrawl twittercrawl location cluster"
-runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runEventClustering.sh runLocationExtraction.sh  runPipeline.sh)
+
 
 if [ $# -eq  1 ] ; then
 	# provided an argument
@@ -22,15 +25,11 @@ if [ $# -eq  1 ] ; then
 		# single run of a single component
 		index=0
 		for mode in $singleRunModes; do
-			echo "Checking mode $mode vs $1"
+
 			if [ "$mode" == "$1" ] ; then 
-				echo "script match: "
-				echo "$EXECDIR/${runscripts[$index]}"
 				bash "$EXECDIR/${runscripts[$index]}"
-				echo "Completed."
 				exit 0
 			else
-				echo "arg $1 is not # $index :  $mode"
 				index=$((index+1))
 			fi
 		done
@@ -45,8 +44,12 @@ if [ $# -eq  1 ] ; then
 			>&2 echo "No crontab at $tabpath."
 			exit 1
 		fi
-		cat $tabpath
+		echo  "Contents are:"
+		cat "$tabpath"
+		service cron start
 		crontab $tabpath
+		echo "Scheduled."
+		exit 0
 	fi
 elif [ $# -gt 1 ] ; then
 	>&2 echo "$0 needs at most 1 argument."
