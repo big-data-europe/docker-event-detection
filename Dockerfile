@@ -1,6 +1,6 @@
 # Pull base image.
 # FROM ubuntu:trusty
-FROM bdebase
+FROM bdebase_package
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
 ARG daemon_directory="/daemon"
 ARG connections_config_filename="/mnt/connections.conf"
@@ -57,13 +57,7 @@ ADD bde-mvn-settings.xml /root/.m2/settings.xml
 
 
 
-COPY initialize.sh /initialize.sh
 
-RUN echo -n 'Updating setting files...'
-COPY connections_config.sh /connections_config.sh
-
-RUN bash /connections_config.sh $connections_config_file \
-    && echo "Done updating settings files."
 
 
 
@@ -75,14 +69,7 @@ ENV MOUNTDIR /mnt
 RUN mkdir -p $MOUNTDIR
 
 
-# copy the execution scripts for each module
-# and set an environment variabe
 
-ENV EXECDIR="/bdex"
-RUN mkdir "$EXECDIR"
-COPY run.sh runPipeline.sh runNewsCrawling.sh runTwitterCrawling.sh \
-  runLocationExtraction.sh runEventClustering.sh $EXECDIR/
-RUN chmod +x $EXECDIR/*
 
 # RUN echo 'Building components... Done.'
 
@@ -148,8 +135,28 @@ ENV DAEMON_INFO_FILE $daemon_directory/daemoninfo
 RUN echo "init-daemon interface setup complete."
 ### End of Daemon interface
 
+# copy the execution scripts for each module
+# and set an environment variabe
 
+ENV EXECDIR="/bdex"
+ENV CLASSPATHFILE $EXECDIR/classpathfile
+ENV CONNECTIONS_FILE $connections_config_filename
+
+RUN mkdir -p "$EXECDIR"
+COPY run.sh runPipeline.sh runNewsCrawling.sh runTwitterCrawling.sh \
+  runLocationExtraction.sh runEventClustering.sh $EXECDIR/
+
+COPY initialize.sh /initialize.sh
+
+RUN echo -n 'Updating setting files...'
+COPY connections_config.sh /connections_config.sh
+RUN bash /connections_config.sh  $CONNECTIONS_FILE \
+    && echo "Done updating settings files."
+    
+COPY setClassPath.sh $EXECDIR/setClassPath.sh
 
  
+RUN chmod +x $EXECDIR/*
+
 # Define default command.
-CMD ["bash"]
+CMD ["bash","/initialize.sh"]
