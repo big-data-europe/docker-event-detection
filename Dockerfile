@@ -1,119 +1,120 @@
 # Pull base image.
 # FROM ubuntu:trusty
-FROM bdebase_package
+FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
-ARG daemon_directory="/daemon"
-ARG connections_config_filename="/mnt/connections.conf"
+ARG DAEMON_DIRECTORY="/daemon"
+ARG MOUNT_DIR="/mnt"
+ARG CONNECTIONS_CONFIG_FILENAME="$MOUNT_DIR/connections.conf"
+ARG SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/newsproperties"
+ARG SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/newsurls"
+ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
+ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
+ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
+ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
-# Install main apt utils
-#RUN apt-get update 
-#apt-get install -y \
-#software-properties-common
-
-# Install Java
-#RUN echo 'Getting java 8...'
-#
-#RUN \
-  #echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  #add-apt-repository -y ppa:webupd8team/java && \
-  #apt-get update && \
-  #apt-get install -y oracle-java8-installer && \
-  #rm -rf /var/lib/apt/lists/* && \
-  #rm -rf /var/cache/oracle-jdk8-installer
-
-
-# Define commonly used JAVA_HOME variable
-#ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-
-
-# Get build tools
-
-
+########################################
+##  Get and build sources
+########################################
+# Install utils and tools
+RUN echo "Installing prerequisites"
+RUN apt-get update 
+RUN apt-get install -y git curl cron
+  
 # Make and define working directory.
-ENV BDEROOT "/bde"
-RUN mkdir -p $BDEROOT
+ENV BDE_ROOT_DIR "/bde"
+RUN mkdir -p "$BDE_ROOT_DIR"
 
-
-
-# RUN echo 'Adding custom NewSum components...'
-# ADD NewSumClusterer/ ~/.m2/repository/org/scify/NewSumClusterer/
-# ADD NewSumClusterer-0.5-BDE-SNAPSHOT.jar /bde/
-# ADD NewSumSummarizer/ ~/.m2/repository/org/scify/NewSumSummarizer/
-# ADD NewSumSummarizer-1.2-BDE-SNAPSHOT.jar  /bde/
-# ADD SocialMediaEvaluator/ ~/.m2/repository/org/scify/SocialMediaEvaluator/
-# ADD SocialMediaEvaluator-0.4.1-BDE-SNAPSHOT.jar /bde/
-# ADD *.jar /bde/
-# ADD *.pom /bde/
+# Clone BDE components
+RUN echo 'Getting BDE components.'
+RUN cd /bde; \
+git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
+RUN  cd "/bde/BDEEventDetection"; git checkout testrun; 
 
 # Temporarily use public SciFY user
 ADD bde-mvn-settings.xml /root/.m2/settings.xml
 
-# TODO: Use only jars instead of whole repos from SciFY
-# ADD registerNSComponents.sh /bde/
-# RUN ["/bin/bash", "/bde/registerNSComponents.sh"]
+
+RUN echo 'Preparing build.'
+COPY build/* /
+RUN bash setparameters.sh
+
+# Get POMs that output dependency jars
+# on /<module>/target/dependencies/*
+RUN mkdir -p /tmp/poms
+COPY exportDependencyPoms/* /tmp/poms/
 
 
+# HOTFIX  TODO remove
+# /////////////////////////////////////
+RUN echo >&2  "***********************" && echo >&2 "Adding scify unavailability hotfix, remove when issue is resolved."
+# because scify.org repo is unreachable copy the dependencies from the source pc
+RUN mkdir -p $BDE_ROOT_DIR/BDEEventDetection/BDECLustering/externalDependencies
+COPY scify/jars/* $BDE_ROOT_DIR/BDEEventDetection/BDECLustering/externalDependencies/
+# override the problematic module's pom with one that reads the scify deps as external ones
+COPY scify/cluster_withScify_systemdeps "/tmp/poms/cluster"
+# /////////////////////////////////////
 
+# copy the POMs on their respective module directories
+RUN bash /copy_poms_from_folder.sh "/tmp/poms"
 
+RUN echo 'Building.'
+# Build
+RUN cd /bde/BDEEventDetection;  mvn package;
 
+# clean up build
+# remove poms and auxilliary scripts
+RUN rm -vrf tmp/poms  
+RUN rm -fv /copy_poms_from_folder.sh setparameters.sh
 
+# for debugging, TODO Remove
+RUN echo >&2 "*******************" && echo >&2 "Installing nano for debugging, remove @ production version."
+RUN apt-get install -y nano
 
+########################################
+##  Add and configure interface 
+########################################
 
+### Create environment variables from build args
 
-
-
-# create a mount directory to mount all user-provided resources
-ENV MOUNTDIR "/mnt"
-RUN mkdir -p $MOUNTDIR
-
-
-
-
-# RUN echo 'Building components... Done.'
-
-### Scheduling
-##############
-# install cron, start the service 
-# installed in bde-base
-
-# create a crontab file for root
-RUN touch $MOUNTDIR/crontabfile
-RUN crontab $MOUNTDIR/crontabfile
-
-### End of scheduling
+ENV CONNECTIONS_CONFIG_FILENAME="$CONNECTIONS_CONFIG_FILENAME"
+ENV SUPPLIED_NEWS_PROPS_FILE="$SUPPLIED_NEWS_PROPS_FILE"
+ENV SUPPLIED_NEWS_URLS_FILE="$SUPPLIED_NEWS_URLS_FILE"
+ENV SUPPLIED_CLUSTER_PROPS_FILE="$SUPPLIED_CLUSTER_PROPS_FILE"
+ENV SUPPLIED_LOCATION_PROPS_FILE="$SUPPLIED_LOCATION_PROPS_FILE"
+ENV SUPPLIED_TWITTER_QUERIES_FILE="$SUPPLIED_TWITTER_QUERIES_FILE"
+ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
+# create the mount directory to access all user-provided resources
+ENV MOUNT_DIR="$MOUNT_DIR"
+RUN mkdir -p $MOUNT_DIR
 
 ### Daemon interface
-####################
+
 RUN echo "Setting up the init-daemon interface."
 # declare and set environment variables required for interaction with the 
 # init daemon to their default values. Stepname can/will be set at the 
 # daemonInterface.sh (TBD)
-
+ENV DAEMON_DIRECTORY "$DAEMON_DIRECTORY"
+RUN echo >&2 "****************" && echo >&2 "Disabling the daemon interface for testing".
 ENV ENABLE_INIT_DAEMON false
 ENV INIT_DAEMON_BASE_URI http://identifier/init-daemon
 ENV INIT_DAEMON_STEP default_step_name
 
 # make a dedicated directory for the daemon interface and a mount point
 # daemon scripts will be placed there. Is a build arg (default=/daemon).
-# also add the daemon_directory name to /home keep track of the location in a 
+# also add the DAEMON_DIRECTORY name to /root keep track of the location in a 
 # built image 
-RUN echo "$daemon_directory" > /home/daemonDirLoc
-ENV DAEMON_DIR $daemon_directory
-RUN mkdir -p $daemon_directory
+RUN echo "$DAEMON_DIRECTORY" > /root/daemonDirLoc
+RUN mkdir -p $DAEMON_DIRECTORY
 
 # copy the main script that will manage the interface with the remote daemon
 # and the query scripts the perform the querying at each stage
 # run your work right after the execute-step.sh call
-
-COPY wait-for-step.sh $daemon_directory/
-COPY execute-step.sh $daemon_directory/
-COPY finish-step.sh $daemon_directory/
-COPY daemonInterface.sh $daemon_directory/
+COPY daemon/* $DAEMON_DIRECTORY/
 
 # set the executable bit for the scripts
-RUN chmod +x $daemon_directory/*.sh
+RUN chmod +x $DAEMON_DIRECTORY/*.sh
 
 # set sleep times for wait - execute - finish daemon probe scripts
 ENV SLEEP_WAIT 1
@@ -126,37 +127,32 @@ ENV SLEEP_FINISH 1
 # Mount as data volume to a mount point and write in it 
 # the override  daemon address.
 
-
-ENV DAEMON_INFO_FILE $daemon_directory/daemoninfo
-
-
-
-
+ENV DAEMON_INFO_FILE $DAEMON_DIRECTORY/daemoninfo
 RUN echo "init-daemon interface setup complete."
 ### End of Daemon interface
 
+
+### Execution
+##############
 # copy the execution scripts for each module
-# and set an environment variabe
+# set env. variables 
+# bde execution scripts directory
+ENV EXEC_DIR="/bdex"
+# the classpath with all required jars
+ENV CLASSPATHFILE $EXEC_DIR/classpathfile
+# create folders, copy execution and auxilliary scripts
+RUN mkdir -p "$EXEC_DIR"
+COPY exec/*  $EXEC_DIR/
 
-ENV EXECDIR="/bdex"
-ENV CLASSPATHFILE $EXECDIR/classpathfile
-ENV CONNECTIONS_FILE $connections_config_filename
+# copy the entrypoint driver script
+COPY driver.sh /
 
-RUN mkdir -p "$EXECDIR"
-COPY run.sh runPipeline.sh runNewsCrawling.sh runTwitterCrawling.sh \
-  runLocationExtraction.sh runEventClustering.sh $EXECDIR/
+# set execution bit 
+RUN chmod +x $EXEC_DIR/* /driver.sh
 
-COPY initialize.sh /initialize.sh
-
-RUN echo -n 'Updating setting files...'
-COPY connections_config.sh /connections_config.sh
-RUN bash /connections_config.sh  $CONNECTIONS_FILE \
-    && echo "Done updating settings files."
-    
-COPY setClassPath.sh $EXECDIR/setClassPath.sh
-
- 
-RUN chmod +x $EXECDIR/*
+# store the environment variables on a file to help with
+# cron-scheduled runs
+RUN printenv > ~/envvars
 
 # Define default command.
 CMD ["bash","/initialize.sh"]

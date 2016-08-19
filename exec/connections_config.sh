@@ -25,8 +25,8 @@ function useDefaults {
 	echo "cassandraHostIP=127.0.0.1"
 	echo "cassandraPort=9042"
 }
-
-echo "Setting cassandra connection parameters and twitter credentials."
+echo
+echo ">Setting cassandra connection parameters and twitter credentials."
 
 # defaults. Twitter default credentials will obviously not work.
 twitterConsumerKey="defaultConsumerKey"
@@ -37,7 +37,7 @@ connectionIP="127.0.0.1"
 connectionPort="9042"
 
 # errors below should happen only when calling this script out of context
-if [ -z $BDEROOT ]; then
+if [ -z $BDE_ROOT_DIR ]; then
 	>&2 echo "Warning: Unset BDE root folder variable."
 	exit 1
 fi
@@ -80,25 +80,29 @@ else
 fi
 
 # files to modify
-paths="$BDEROOT/BDEEventDetection/BDECLustering/res/clustering.properties"
-paths+=" $BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-paths+=" $BDEROOT/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
-paths+=" $BDEROOT/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
+paths="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/clustering.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
 # newline-delimit, let's not change IFS
 paths="$(echo $paths | sed  's/ /\n/g' )"
 
 # sed the files with cassandra host/port
-echo "Setting cassandra host:[$connectionIP] , port:[$connectionPort]..."
+echo "Setting cassandra host:[$connectionIP] , port:[$connectionPort] to"
 for f in $paths ; do
-	echo "[$f]"
+	echo -e "\t[$f]"
 	sed -i "s/cassandra_hosts.*/cassandra_hosts=$connectionIP/g" $f
 	sed -i "s/cassandra_port.*/cassandra_port=$connectionPort/g" $f
 done
-echo "Setting twitter credentials:"
-echo "$twitterConsumerKey $twitterConsumerKeySecret $twitterAccessTokken $twitterAccessTokkenSecret"
-# set the twitter credentials
-sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$BDEROOT/BDEEventDetection/BDETwitterListener/res/twitter.properties"
 
+# set the twitter credentials
+echo "Setting twitter credentials:"
+filepath="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties";
+printf "\t[%s]\n\t[%s]\n\t[%s]\n\t[%s] \nto\n\t[%s]\n\n" "$twitterConsumerKey" "$twitterConsumerKeySecret" \
+		"$twitterAccessTokken" "$twitterAccessTokkenSecret"  "$filepath"
+sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" $filepath
+sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" $filepath
+sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" $filepath
+sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g"  $filepath
+
+echo "-Done setting connection information."; echo

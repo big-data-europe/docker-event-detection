@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-
+echo
+echo ">Running daemon interface script."
 # Init-daemon address, start and mark execute
 ##############################################
 if [ $ENABLE_INIT_DAEMON = "true" ]; then
-	echo "Running daemon interface script."
+	
 
 	echo "Resolving the daemon's address."
 	echo  "----------------------------------"
@@ -57,44 +58,41 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 
 	# get permission to initialize
 	echo
-	echo "Daemon - validation:"
-	$DAEMON_DIR/wait-for-step.sh
+	echo "Daemon - initialization:"
+	$DAEMON_DIRECTORY/wait-for-step.sh
 	
 	# put initialization code of the container here
-	# dummy run
-	echo "Here the container should initialize, if needed."
-	echo "Dummy initializing...done"
+	echo "Running init-daemon-authorized BDE initialization"
+	$EXEC_DIR/initialize.sh $1
 	echo
 
 	# notify execution
 	echo
 	echo "Daemon - execution:"
-	$DAEMON_DIR/execute-step.sh
+	$DAEMON_DIRECTORY/execute-step.sh
 
 	
 	echo
 else
-	# if the init daemon is disabled, initialize here instead.
-	# put initialization code of the container here
-	# dummy run
-	echo "Daemon interface is disabled"
-	echo "Here the container should initialize, if needed."
-	echo "Dummy initializing...done"
-	echo
+
+	# if the init daemon is disabled, initialize here instead.	
+	echo "The init-daemon interface is disabled."
+	echo "Running BDE initialization"
+	$EXEC_DIR/initialize.sh  $1
 
 fi
 
 
 # put execution code of the container here
 
-$EXECDIR/run.sh $1
+$EXEC_DIR/run.sh $1
 
 
 # notify end of execution
 
 if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	echo "Daemon - finish:"
-	$DAEMON_DIR/finish-step.sh
+	$DAEMON_DIRECTORY/finish-step.sh
 fi
-echo "Done."
-
+echo "-Done running the daemon interface script."
+echo
