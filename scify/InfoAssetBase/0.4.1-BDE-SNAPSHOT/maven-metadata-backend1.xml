@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.scify</groupId>
+  <artifactId>InfoAssetBase</artifactId>
+  <version>0.4.1-BDE-20160415.165542-1</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20160415.165542</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20160526151325</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.4.1-BDE-20160415.165542-1</value>
+        <updated>20160415165542</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.4.1-BDE-20160415.165542-1</value>
+        <updated>20160415165542</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
