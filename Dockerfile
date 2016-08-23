@@ -155,4 +155,4 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 RUN printenv > ~/envvars
 
 # Define default command.
-CMD ["bash","/initialize.sh"]
+CMD ["bash"]
