@@ -30,7 +30,7 @@ RUN mkdir -p "$BDE_ROOT_DIR"
 RUN echo 'Getting BDE components.'
 RUN cd /bde; \
 git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
-RUN  cd "/bde/BDEEventDetection"; git checkout testrun; 
+RUN  cd "/bde/BDEEventDetection"; git checkout deploy; 
 
 # Temporarily use public SciFY user
 ADD bde-mvn-settings.xml /root/.m2/settings.xml
@@ -69,8 +69,8 @@ RUN rm -vrf tmp/poms
 RUN rm -fv /copy_poms_from_folder.sh setparameters.sh
 
 # for debugging, TODO Remove
-RUN echo >&2 "*******************" && echo >&2 "Installing nano for debugging, remove @ production version."
-RUN apt-get install -y nano
+RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
+RUN apt-get install -y nano netcat
 
 ########################################
 ##  Add and configure interface 
