@@ -57,7 +57,7 @@ else
 	# check
 	if [ $(echo $twitterInfo | wc -w ) -ne 4 ]; then
 		echo "asd"
-		>&2 echo "Need 4 items for twitter credentials. Check the readme file."
+		>&2 echo "***Error : Malformed file.Need 4 items for twitter credentials. Check the readme file."
 		usage
 		exit 1
 	fi
