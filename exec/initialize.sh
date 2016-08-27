@@ -75,6 +75,7 @@ fi
 sed -i "s<ne_models_path=.*<ne_models_path=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/ne_models<g" "$locationprops"
 sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/en-sent.bin<g" "$locationprops"
 sed -i "s<polygon_extraction_sourcefile=.*<polygon_extraction_sourcefile=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/sourcePolygonsLocalExtractor.csv<g" "$locationprops"
+sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=local<g" "$locationprops"
 mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/sourcePolygonsLocalExtractor.csv" "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/sourcePolygonsLocalExtractor.csv"
 
