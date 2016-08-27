@@ -11,6 +11,7 @@ echo ;echo ">Running the BDE initialization script."; echo ;
 # set the default deploy properties
 
 
+
 # get potentially user supplied properties files
 
 # print help
@@ -73,6 +74,9 @@ else
 fi
 sed -i "s<ne_models_path=.*<ne_models_path=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/ne_models<g" "$locationprops"
 sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/en-sent.bin<g" "$locationprops"
+sed -i "s<polygon_extraction_sourcefile=.*<polygon_extraction_sourcefile=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/sourcePolygonsLocalExtractor.csv<g" "$locationprops"
+mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
+cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/sourcePolygonsLocalExtractor.csv" "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/sourcePolygonsLocalExtractor.csv"
 
 twitterqueries="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries"
 if [ -f "$SUPPLIED_TWITTER_QUERIES_FILE" ]; then
@@ -95,3 +99,4 @@ $EXEC_DIR/connections_config.sh "$CONNECTIONS_CONFIG_FILENAME"
 
 
 echo "-Done running the BDE initialization script."; echo 
+
