@@ -20,8 +20,7 @@ function usage {
 
 }
 
-
-if [ -z $JARCLASSPATH ] && [ "$#" -eq 1 ] && [ "$1" == "help" ] ; then
+if [ -z $JARCLASSPATH ] &&  [ ! "$1" == "help" ] ; then
 		bash $EXEC_DIR/setClassPath.sh $1
 	export JARCLASSPATH="$(cat $CLASSPATHFILE)"
 fi
