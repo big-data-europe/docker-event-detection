@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 echo ">>>>Running event clusterer."
@@ -11,7 +12,7 @@ modulefolder="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering"
 configfile="$modulefolder/res/clustering.properties"
 
 
-execute="java -cp $JARCLASSPATH  gr.demokritos.iit.clustering.exec.BDEEventDetection $configfile"
+execute="java -cp $JARCLASSPATH  gr.demokritos.iit.clustering.exec.BDEEventDetection $configfile strabon"
 #echo "$execute"
 logfile="$($EXEC_DIR/setLogfileName.sh cluster $LOG_DIR $LOG_PREFIX)"
 echo "Writing log to $logfile"
