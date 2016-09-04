@@ -85,7 +85,6 @@ unzip "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/dataset.zip" -d "$BD
 mv "$(find $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/ -type f)"  "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv"
 sed -i "s<polygon_extraction_sourcefile=.*<polygon_extraction_sourcefile=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv<g" "$locationprops"
 
-cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/sourcePolygonsLocalExtractor.csv" "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/sourcePolygonsLocalExtractor.csv"
 
 twitterqueries="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries"
 if [ -f "$SUPPLIED_TWITTER_QUERIES_FILE" ]; then
