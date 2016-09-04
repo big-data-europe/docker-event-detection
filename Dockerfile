@@ -85,6 +85,7 @@ ENV SUPPLIED_CLUSTER_PROPS_FILE="$SUPPLIED_CLUSTER_PROPS_FILE"
 ENV SUPPLIED_LOCATION_PROPS_FILE="$SUPPLIED_LOCATION_PROPS_FILE"
 ENV SUPPLIED_TWITTER_QUERIES_FILE="$SUPPLIED_TWITTER_QUERIES_FILE"
 ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
+
 # create the mount directory to access all user-provided resources
 ENV MOUNT_DIR="$MOUNT_DIR"
 RUN mkdir -p $MOUNT_DIR
@@ -140,6 +141,8 @@ RUN echo "init-daemon interface setup complete."
 ENV EXEC_DIR="/bdex"
 # the classpath with all required jars
 ENV CLASSPATHFILE $EXEC_DIR/classpathfile
+# initialization flag file
+ENV INITIALIZATION_FILE="$EXEC_DIR/.initialized"
 # create folders, copy execution and auxilliary scripts
 RUN mkdir -p "$EXEC_DIR"
 COPY exec/*  $EXEC_DIR/
