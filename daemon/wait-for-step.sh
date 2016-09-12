@@ -7,10 +7,10 @@ if [ $ENABLE_INIT_DAEMON = "true" ]
            sleep $SLEEP_WAIT
            msg="$INIT_DAEMON_BASE_URI/canStart?step=$INIT_DAEMON_STEP"
            printf "wait : sent [%s]\n" $msg
-           string=$(curl -s $msg)
+           string=$(curl -sL -w "%{http_code}" -X PUT $msg -d "" -o /dev/null)
            printf "wait : Got back string : [%s]\n" $string
 
-           [ "$string" = "true" ] && break
+           [ "$string" = "204" ] && break;
            printf "sleeping for %d seconds.\n" $SLEEP_WAIT
        done
        echo "Can start step ${INIT_DAEMON_STEP} in the pipeline"
