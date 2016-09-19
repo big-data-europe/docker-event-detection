@@ -6,7 +6,9 @@ ARG DAEMON_DIRECTORY="/daemon"
 ARG MOUNT_DIR="/mnt"
 ARG CONNECTIONS_CONFIG_FILENAME="$MOUNT_DIR/connections.conf"
 ARG SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/newsproperties"
+ARG SUPPLIED_BLOG_PROPS_FILE="$MOUNT_DIR/blogproperties"
 ARG SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/newsurls"
+ARG SUPPLIED_BLOG_URLS_FILE="$MOUNT_DIR/blogsurls"
 ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
 ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
 ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
@@ -28,8 +30,10 @@ RUN mkdir -p "$BDE_ROOT_DIR"
 
 # Clone BDE components
 RUN echo 'Getting BDE components.'
+
 RUN cd /bde; \
 git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
+
 RUN  cd "/bde/BDEEventDetection"; git checkout deploy; 
 
 # Temporarily use public SciFY user
@@ -40,25 +44,6 @@ RUN echo 'Preparing build.'
 COPY build/* /
 RUN bash setparameters.sh
 
-# Get POMs that output dependency jars
-# on /<module>/target/dependencies/*
-RUN mkdir -p /tmp/poms
-COPY exportDependencyPoms/* /tmp/poms/
-
-
-# HOTFIX  TODO remove
-# /////////////////////////////////////
-RUN echo >&2  "***********************" && echo >&2 "Adding scify unavailability hotfix, remove when issue is resolved."
-# because scify.org repo is unreachable copy the dependencies from the source pc
-RUN mkdir -p $BDE_ROOT_DIR/BDEEventDetection/BDECLustering/externalDependencies
-COPY scify/jars/* $BDE_ROOT_DIR/BDEEventDetection/BDECLustering/externalDependencies/
-# override the problematic module's pom with one that reads the scify deps as external ones
-COPY scify/cluster_withScify_systemdeps "/tmp/poms/cluster"
-# /////////////////////////////////////
-
-# copy the POMs on their respective module directories
-RUN bash /copy_poms_from_folder.sh "/tmp/poms"
-
 RUN echo 'Building.'
 # Build
 RUN cd /bde/BDEEventDetection;  mvn package;
@@ -66,7 +51,7 @@ RUN cd /bde/BDEEventDetection;  mvn package;
 # clean up build
 # remove poms and auxilliary scripts
 RUN rm -vrf tmp/poms  
-RUN rm -fv /copy_poms_from_folder.sh setparameters.sh
+RUN rm -fv /addJarDependencyPomPlugin.sh setparameters.sh
 
 # for debugging, TODO Remove
 RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
@@ -159,3 +144,8 @@ RUN printenv > ~/envvars
 
 # Define default command.
 CMD ["/driver.sh"]
+
+
+
+
+

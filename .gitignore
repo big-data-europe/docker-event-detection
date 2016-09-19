@@ -1,2 +1,7 @@
 mountdir/*
 launch.sh
+sshauth/*
+Dockerfile-local
+loc.sh
+locrun.sh
+exportDependencyPoms/*

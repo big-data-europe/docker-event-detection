@@ -6,7 +6,7 @@ echo ;echo ">Running the BDE initialization script."; echo ;
 
 # check whether initialization already took place
 if [ -f  "$INITIALIZATION_FILE" ]; then
-	echo "Initialization is already completed."
+	echo "Initialization has already been performed, returning."
 	exit 0
 fi
 # get and set properties files
@@ -52,6 +52,24 @@ if [ -f "$SUPPLIED_NEWS_URLS_FILE" ]; then
 	cp "$SUPPLIED_NEWS_URLS_FILE" "$newsurls"
 else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/news_urls.txt" "$newsurls"
+fi
+
+# blogs
+blogprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogcrawler_configuration.properties";
+if [ -f "$SUPPLIED_BLOG_PROPS_FILE" ]; then
+	echo "Fetching user supplied blog properties."
+	cp "$SUPPLIED_BLOG_PROPS_FILE" "$blogprops"
+else
+	cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/blogcrawler_configuration.properties" "$blogprops"
+fi
+
+sed -i "s<urls_file_name=.*<urls_file_name=$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blog_urls.txt<g" "$blogprops"
+blogurls="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blog_urls.txt";
+if [ -f "$SUPPLIED_BLOG_URLS_FILE" ]; then
+	echo "Fetching user supplied blog urls."
+	cp "$SUPPLIED_BLOG_URLS_FILE" "$blogurls"
+else
+	cp "$BDE_ROOT_DIR/BDEEventDetection/defaultPropertyFiles/blog_urls.txt" "$blogurls"
 fi
 
 # clustering
