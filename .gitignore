@@ -6,3 +6,4 @@ loc.sh
 locrun.sh
 exportDependencyPoms/*
 bde-mvn-settings.xml
+scify/*
