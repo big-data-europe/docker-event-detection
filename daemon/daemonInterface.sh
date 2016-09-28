@@ -63,7 +63,7 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 	
 	# put initialization code of the container here
 	echo "Running init-daemon-authorized BDE initialization"
-	$EXEC_DIR/initialize.sh $1
+	$EXEC_DIR/runInitialization.sh $1
 	echo
 
 	# notify execution
@@ -78,7 +78,7 @@ else
 	# if the init daemon is disabled, initialize here instead.	
 	echo "The init-daemon interface is disabled."
 	echo "Running BDE initialization"
-	$EXEC_DIR/initialize.sh  $1
+	$EXEC_DIR/runInitialization.sh  $1
 
 fi
 

@@ -9,8 +9,7 @@ singleRunModes="news tweets-search tweets-monitor tweets-stream blogs location c
 runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runTwitterCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
 
 CRONTAB_PATH="$MOUNT_DIR/bdetab"
-export LOG_DIR="/var/log/bde"
-mkdir -p "$LOG_DIR"
+
 
 function usage {
 	echo "Module running usage:"

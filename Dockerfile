@@ -13,6 +13,7 @@ ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
 ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
 ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
 ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
+ARG LOG_DIR="/var/log/bde"
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
@@ -22,7 +23,7 @@ LABEL multi.label1="BDE" \
 # Install utils and tools
 RUN echo "Installing prerequisites"
 RUN apt-get update 
-RUN apt-get install -y git curl cron
+RUN apt-get install -y git 
   
 # Make and define working directory.
 ENV BDE_ROOT_DIR "/bde"
@@ -30,39 +31,33 @@ RUN mkdir -p "$BDE_ROOT_DIR"
 
 # Clone BDE components
 RUN echo 'Getting BDE components.'
-
 RUN cd /bde; \
 git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
 
 RUN  cd "/bde/BDEEventDetection"; git checkout deploy; 
 
-# Temporarily use public SciFY user
-ADD bde-mvn-settings.xml /root/.m2/settings.xml
-
-
 RUN echo 'Preparing build.'
 COPY build/* /
-RUN bash setparameters.sh
+#RUN bash setparameters.sh
 
 RUN echo 'Building.'
 # Build
-RUN cd /bde/BDEEventDetection;  mvn package;
+# make sure you copy maven settings and compile in a single run command. The maven container will delete ~/.m2 contents
+# as each intermediate container for each command exits
+RUN cd /bde/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn package;
 
 # clean up build
 # remove poms and auxilliary scripts
 RUN rm -vrf tmp/poms  
 RUN rm -fv /addJarDependencyPomPlugin.sh setparameters.sh
 
-# for debugging, TODO Remove
-RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
-RUN apt-get install -y nano netcat
 
 ########################################
 ##  Add and configure interface 
 ########################################
 
 ### Create environment variables from build args
-
+ENV LOG_DIR="$LOG_DIR"
 ENV CONNECTIONS_CONFIG_FOLDER="$CONNECTIONS_CONFIG_FOLDER"
 ENV SUPPLIED_NEWS_PROPS_FILE="$SUPPLIED_NEWS_PROPS_FILE"
 ENV SUPPLIED_NEWS_URLS_FILE="$SUPPLIED_NEWS_URLS_FILE"
@@ -75,7 +70,10 @@ ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
 
 # create the mount directory to access all user-provided resources
 ENV MOUNT_DIR="$MOUNT_DIR"
+
+# create  directories
 RUN mkdir -p $MOUNT_DIR
+RUN mkdir -p $LOG_DIR
 
 ### Daemon interface
 
@@ -143,6 +141,12 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 # store the environment variables on a file to help with
 # cron-scheduled runs
 RUN printenv > ~/envvars
+
+# install rest of required packages
+RUN apt-get install -y curl cron
+# for debugging, TODO Remove
+RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
+RUN apt-get install -y nano netcat
 
 # Define default command.
 CMD ["/driver.sh"]

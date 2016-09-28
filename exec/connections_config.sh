@@ -27,10 +27,10 @@ echo ">Setting cassandra/mysql connection parameters and twitter credentials."
 
 
 # property files to modify
-paths="$BDE_ROOT_DIR/BDECLustering/res/clustering.properties"
-paths+=" $BDE_ROOT_DIR/BDETwitterListener/res/twitter.properties"
-paths+=" $BDE_ROOT_DIR/BDELocationExtraction/res/location_extraction.properties"
-paths+=" $BDE_ROOT_DIR/BDERSSCrawler/res/newscrawler_configuration.properties"
+paths="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/clustering.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
 
 # newline-delimit, let's not change IFS
 paths="$(echo $paths | sed  's/ /\n/g' )"
@@ -47,7 +47,7 @@ echo "Setting repository connection parameters and twitter credentials."
 twitterfile="$CONNECTIONS_CONFIG_FOLDER/twitter.conf"
 if [ -f "$twitterfile" ]; then
 
-	twitterConsumerKey="$(cat $twitterfile | tail -1 | head -1)"
+	twitterConsumerKey="$(cat $twitterfile | head -1 | tail -1)"
 	twitterConsumerKeySecret="$(cat $twitterfile | head -2 | tail -1)"
 	twitterAccessTokken="$(cat $twitterfile | head -3 | tail -1)"
 	twitterAccessTokkenSecret="$(cat $twitterfile | head -4 | tail -1)"
@@ -59,11 +59,18 @@ if [ -f "$twitterfile" ]; then
 	printf "\tacctoken: [%s]\n" $twitterAccessTokken
 	printf "\tacctokensecret: [%s]\n" $twitterAccessTokkenSecret
 
-	# set the twitter credentials
-	sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$BDE_ROOT_DIR/BDETwitterListener/res/twitter.properties"
-	sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$BDE_ROOT_DIR/BDETwitterListener/res/twitter.properties"
-	sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$BDE_ROOT_DIR/BDETwitterListener/res/twitter.properties"
-	sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$BDE_ROOT_DIR/BDETwitterListener/res/twitter.properties"
+        twitterpropsfile="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+        if [ ! -f "$twitterpropsfile" ]; then
+                echo >&2 "File [$twitterpropsfile] not found "
+        else
+        # set the twitter credentials
+                sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$twitterpropsfile"
+                sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$twitterpropsfile"
+                sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$twitterpropsfile"
+                sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$twitterpropsfile"
+        fi
+
+
 
 else
 	echo "(!) No twitter credentials were found at [$twitterfile]!"
@@ -97,6 +104,8 @@ if [  -f "$cassandrafile" ] ; then
 
 	for f in $paths ; do
 		printf "\t%s\n" "$f"
+                [ ! -f $f ] && echo >&2 "File [$f] not found" && continue;
+
 		sed -i "s/cassandra_hosts.*/cassandra_hosts=$cassandraHost/g" $f
 		sed -i "s/cassandra_port.*/cassandra_port=$cassandraPort/g" $f
 		sed -i "s/cassandra_keyspace.*/cassandra_keyspace=$cassandraKeyspace/g" $f
@@ -131,8 +140,10 @@ if [ -f "$mysqlfile" ]; then
 	for f in $paths ; do
 
 		printf "\t%s\n" "$f"
+                [ ! -f $f ] && echo >&2 "File [$f] not found" && continue;
+
 		sed -i "s<databaseHost.*<databaseHost=$databaseHost<g" $f
-		sed -i "s<databaseName.*<databaseName=$databaseName<g" $f
+		sed -i "s<databasename.*<databasename=$databaseName<g" $f
 		sed -i "s<databaseUsername.*<databaseUsername=$databaseUsername<g" $f
 		sed -i "s<databasePassword.*<databasePassword=$databasePassword<g" $f
 	done
