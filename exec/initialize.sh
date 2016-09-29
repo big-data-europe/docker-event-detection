@@ -106,6 +106,7 @@ fi
 
 # set profiles path for language detection
 profilesPath="$BDE_ROOT_DIR/BDEEventDetection/BDEBase/res/profiles"
+[ ! -f profilesPath ] && >&2 echo "Lang detection profiles do not exist at $profilesPath"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$newsprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$blogprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$twitterprops"

@@ -47,10 +47,10 @@ echo "Setting repository connection parameters and twitter credentials."
 twitterfile="$CONNECTIONS_CONFIG_FOLDER/twitter.conf"
 if [ -f "$twitterfile" ]; then
 
-	twitterConsumerKey="$(cat $twitterfile | head -1 | tail -1)"
-	twitterConsumerKeySecret="$(cat $twitterfile | head -2 | tail -1)"
-	twitterAccessTokken="$(cat $twitterfile | head -3 | tail -1)"
-	twitterAccessTokkenSecret="$(cat $twitterfile | head -4 | tail -1)"
+	twitterConsumerKey="$(cat $twitterfile | grep -v '#' | head -1 | tail -1)"
+	twitterConsumerKeySecret="$(cat $twitterfile | grep -v '#' | head -2 | tail -1)"
+	twitterAccessTokken="$(cat $twitterfile | grep -v '#' | head -3 | tail -1)"
+	twitterAccessTokkenSecret="$(cat $twitterfile | grep -v '#' | head -4 | tail -1)"
 
 
 	printf "Setting twitter :\n"
@@ -61,7 +61,7 @@ if [ -f "$twitterfile" ]; then
 
         twitterpropsfile="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
         if [ ! -f "$twitterpropsfile" ]; then
-                echo >&2 "File [$twitterpropsfile] not found "
+                >&2 echo "File [$twitterpropsfile] not found "
         else
         # set the twitter credentials
                 sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$twitterpropsfile"
@@ -73,7 +73,7 @@ if [ -f "$twitterfile" ]; then
 
 
 else
-	echo "(!) No twitter credentials were found at [$twitterfile]!"
+	>&2 echo "(!) No twitter credentials were found at [$twitterfile]!"
 fi
 
 
@@ -90,10 +90,10 @@ cassandrafile="$CONNECTIONS_CONFIG_FOLDER/cassandra.conf"
 
 if [  -f "$cassandrafile" ] ; then
 
-	cassandraHost="$(cat $cassandrafile | head -1 | tail -1)"
-	cassandraPort="$(cat $cassandrafile | head -2 | tail -1)"
-	cassandraKeyspace="$(cat $cassandrafile | head -3 | tail -1)"
-	cassandraCluster="$(cat $cassandrafile | head -4 | tail -1)"
+	cassandraHost="$(cat $cassandrafile | grep -v '#' | head -1 | tail -1)"
+	cassandraPort="$(cat $cassandrafile | grep -v '#' | head -2 | tail -1)"
+	cassandraKeyspace="$(cat $cassandrafile | grep -v '#' | head -3 | tail -1)"
+	cassandraCluster="$(cat $cassandrafile | grep -v '#' | head -4 | tail -1)"
 
 	printf "\nSetting cassandra:\n"
 	printf "\thost: [%s]\n" $cassandraHost
@@ -104,7 +104,7 @@ if [  -f "$cassandrafile" ] ; then
 
 	for f in $paths ; do
 		printf "\t%s\n" "$f"
-                [ ! -f $f ] && echo >&2 "File [$f] not found" && continue;
+                [ ! -f $f ] && >&2 echo "File [$f] not found" && continue;
 
 		sed -i "s/cassandra_hosts.*/cassandra_hosts=$cassandraHost/g" $f
 		sed -i "s/cassandra_port.*/cassandra_port=$cassandraPort/g" $f
@@ -113,7 +113,7 @@ if [  -f "$cassandrafile" ] ; then
 	done
 
 else
-	echo "(!) No cassandra settings were found at [$cassandrafile]"
+	>&2 echo "(!) No cassandra settings were found at [$cassandrafile]"
 fi
 
 # MYSQL
@@ -125,11 +125,10 @@ fi
 mysqlfile="$CONNECTIONS_CONFIG_FOLDER/mysql.conf"
 if [ -f "$mysqlfile" ]; then
 
-	mysqlinfo="$(cat $mysqlfile | grep -v '#')"
-	databaseHost="$(cat $mysqlfile | head -1 | tail -1)"
-	databaseName="$(cat $mysqlfile | head -2 | tail -1)"
-	databaseUsername="$(cat $mysqlfile | head -3 | tail -1)"
-	databasePassword="$(cat $mysqlfile | head -4 | tail -1)"
+	databaseHost="$(cat $mysqlfile | grep -v '#' | head -1 | tail -1)"
+	databaseName="$(cat $mysqlfile | grep -v '#' | head -2 | tail -1)"
+	databaseUsername="$(cat $mysqlfile | grep -v '#' | head -3 | tail -1)"
+	databasePassword="$(cat $mysqlfile | grep -v '#' | head -4 | tail -1)"
 
 	printf "Setting mysql:\n"
 	printf "\thost: [%s]\n" $databaseHost
@@ -140,7 +139,7 @@ if [ -f "$mysqlfile" ]; then
 	for f in $paths ; do
 
 		printf "\t%s\n" "$f"
-                [ ! -f $f ] && echo >&2 "File [$f] not found" && continue;
+                [ ! -f $f ] && >&2 echo "File [$f] not found" && continue;
 
 		sed -i "s<databaseHost.*<databaseHost=$databaseHost<g" $f
 		sed -i "s<databasename.*<databasename=$databaseName<g" $f
@@ -149,7 +148,7 @@ if [ -f "$mysqlfile" ]; then
 	done
 
 	else
-		echo "(!) No cassandra settings were found at [$mysqlfile]"
+		>&2 echo "(!) No mysql settings were found at [$mysqlfile]"
 fi
 
 

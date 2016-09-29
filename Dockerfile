@@ -23,7 +23,12 @@ LABEL multi.label1="BDE" \
 # Install utils and tools
 RUN echo "Installing prerequisites"
 RUN apt-get update 
-RUN apt-get install -y git 
+RUN apt-get install -y git curl cron
+
+# for debugging, TODO Remove
+RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
+RUN apt-get install -y nano netcat
+
   
 # Make and define working directory.
 ENV BDE_ROOT_DIR "/bde"
@@ -142,11 +147,7 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 # cron-scheduled runs
 RUN printenv > ~/envvars
 
-# install rest of required packages
-RUN apt-get install -y curl cron
-# for debugging, TODO Remove
-RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
-RUN apt-get install -y nano netcat
+
 
 # Define default command.
 CMD ["/driver.sh"]
