@@ -2,8 +2,11 @@
 # FROM ubuntu:trusty
 FROM maven:3-jdk-8
 MAINTAINER George Giannakopoulos (ggianna@iit.demokritos.gr)
+
 ARG DAEMON_DIRECTORY="/daemon"
 ARG MOUNT_DIR="/mnt"
+ARG LOG_DIR="/var/log/bde"
+
 ARG CONNECTIONS_CONFIG_FOLDER="$MOUNT_DIR/connections"
 ARG SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/newsproperties"
 ARG SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/newsurls"
@@ -13,7 +16,8 @@ ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
 ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
 ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
 ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
-ARG LOG_DIR="/var/log/bde"
+ARG SUPPLIED_CRONTAB_FILE="$MOUNT_DIR/bdetab"
+
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
