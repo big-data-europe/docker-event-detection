@@ -78,11 +78,11 @@ fi
 sed -i "s<ne_models_path=.*<ne_models_path=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/ne_models<g" "$locationprops"
 sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/en-sent.bin<g" "$locationprops"
 sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uoa.gr:8080/changeDetection/location/geocode<g" "$locationprops"
-sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=local<g" "$locationprops"
+#sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=local<g" "$locationprops"
 #sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locationprops"
 
 # unzip the local location extraction dataset 
-mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
+#mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 
 unzip "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/dataset.zip" -d "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 mv "$(find $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/ -type f)"  "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv"
@@ -106,7 +106,7 @@ fi
 
 # set profiles path for language detection
 profilesPath="$BDE_ROOT_DIR/BDEEventDetection/BDEBase/res/profiles"
-[ ! -f profilesPath ] && >&2 echo "Lang detection profiles do not exist at $profilesPath"
+[ ! -d profilesPath ] && >&2 echo "Lang detection profiles do not exist at directory $profilesPath"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$newsprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$blogprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$twitterprops"

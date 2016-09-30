@@ -8,9 +8,6 @@ echo ">Running BDE Event detection wrapper execution script at mode [$1]."
 singleRunModes="news tweets-search tweets-monitor tweets-stream blogs location cluster pipeline"
 runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runTwitterCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
 
-CRONTAB_PATH="$MOUNT_DIR/bdetab"
-
-
 function usage {
 	echo "Module running usage:"
 	echo -n "$0 [ $(echo $singleRunModes | sed 's/ / | /g') "
@@ -62,20 +59,20 @@ if [ $# -eq  1 ] ; then
 
 	else
 		# cronjob run
-		echo "Scheduling job according to crontab at [$CRONTAB_PATH]."
+		echo "Scheduling job according to crontab at [$SUPPLIED_CRONTAB_FILE]."
 		
-		if  [ ! -f $CRONTAB_PATH ] ; then
-			>&2 echo "No crontab at $CRONTAB_PATH."
+		if  [ ! -f $SUPPLIED_CRONTAB_FILE ] ; then
+			>&2 echo "No crontab at $SUPPLIED_CRONTAB_FILE."
 			exit 1
 		fi
 		echo  "Crontab contents are:"
 		echo
-		cat "$CRONTAB_PATH"
+		cat "$SUPPLIED_CRONTAB_FILE"
 		echo
 		echo  "Starting & scheduling."
 		# start cron, register the tab and exit.
 		service cron start
-		crontab $CRONTAB_PATH
+		crontab $SUPPLIED_CRONTAB_FILE
 
 		exit 0
 	fi

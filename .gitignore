@@ -7,3 +7,4 @@ locrun.sh
 exportDependencyPoms/*
 bde-mvn-settings.xml
 scify/*
+build/*

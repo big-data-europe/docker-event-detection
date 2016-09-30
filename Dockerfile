@@ -45,21 +45,11 @@ git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
 
 RUN  cd "/bde/BDEEventDetection"; git checkout deploy; 
 
-RUN echo 'Preparing build.'
-COPY build/* /
-#RUN bash setparameters.sh
-
 RUN echo 'Building.'
 # Build
 # make sure you copy maven settings and compile in a single run command. The maven container will delete ~/.m2 contents
 # as each intermediate container for each command exits
 RUN cd /bde/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn package;
-
-# clean up build
-# remove poms and auxilliary scripts
-RUN rm -vrf tmp/poms  
-RUN rm -fv /addJarDependencyPomPlugin.sh setparameters.sh
-
 
 ########################################
 ##  Add and configure interface 
@@ -126,9 +116,9 @@ ENV DAEMON_INFO_FILE $DAEMON_DIRECTORY/daemoninfo
 RUN echo "init-daemon interface setup complete."
 ### End of Daemon interface
 
-
+########################################
 ### Execution
-##############
+########################################
 # copy the execution scripts for each module
 # set env. variables 
 # bde execution scripts directory
@@ -150,8 +140,6 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 # store the environment variables on a file to help with
 # cron-scheduled runs
 RUN printenv > ~/envvars
-
-
 
 # Define default command.
 CMD ["/driver.sh"]
