@@ -11,13 +11,6 @@ echo ;echo ">Running the BDE initialization script."; echo ;
 # get potentially user supplied properties files
 # or set the default deploy properties
 
-#SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/newsproperties"
-#SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/newsurls"
-#SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
-#SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
-#SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
-#SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
-
 # news
 newsprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties";
 if [ -f "$SUPPLIED_NEWS_PROPS_FILE" ]; then
@@ -82,7 +75,7 @@ sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uo
 #sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locationprops"
 
 # unzip the local location extraction dataset 
-#mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
+mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 
 unzip "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/dataset.zip" -d "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 mv "$(find $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/ -type f)"  "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv"
