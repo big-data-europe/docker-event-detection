@@ -3,7 +3,7 @@
 # script to run the BDE event detection pipeline
 # first argument specified scheduled vs single run
 
-echo ">Running BDE Event detection wrapper execution script at mode [$1]."
+echo ">Running BDE Event detection wrapper execution script at mode [$1]. ($0)"
 
 singleRunModes="news tweets-search tweets-monitor tweets-stream blogs location cluster pipeline"
 runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runTwitterCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)

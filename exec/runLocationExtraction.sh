@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo ">>>Running location extractor."
+echo ">>>Running location extractor. ($0)"
 
 if [ -z $JARCLASSPATH ]; then
 	bash $EXEC_DIR/setClassPath.sh

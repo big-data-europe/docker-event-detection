@@ -56,6 +56,7 @@ RUN cd /bde/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  
 ########################################
 
 ### Create environment variables from build args
+ENV MOUNT_DIR="$MOUNT_DIR"
 ENV LOG_DIR="$LOG_DIR"
 ENV CONNECTIONS_CONFIG_FOLDER="$CONNECTIONS_CONFIG_FOLDER"
 ENV SUPPLIED_NEWS_PROPS_FILE="$SUPPLIED_NEWS_PROPS_FILE"
@@ -66,9 +67,8 @@ ENV SUPPLIED_CLUSTER_PROPS_FILE="$SUPPLIED_CLUSTER_PROPS_FILE"
 ENV SUPPLIED_LOCATION_PROPS_FILE="$SUPPLIED_LOCATION_PROPS_FILE"
 ENV SUPPLIED_TWITTER_QUERIES_FILE="$SUPPLIED_TWITTER_QUERIES_FILE"
 ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
-
-# create the mount directory to access all user-provided resources
-ENV MOUNT_DIR="$MOUNT_DIR"
+ENV SUPPLIED_CRONTAB_FILE="$SUPPLIED_CRONTAB_FILE"
+ENV DAEMON_DIRECTORY "$DAEMON_DIRECTORY"
 
 # create  directories
 RUN mkdir -p $MOUNT_DIR
@@ -80,7 +80,7 @@ RUN echo "Setting up the init-daemon interface."
 # declare and set environment variables required for interaction with the 
 # init daemon to their default values. Stepname can/will be set at the 
 # daemonInterface.sh (TBD)
-ENV DAEMON_DIRECTORY "$DAEMON_DIRECTORY"
+
 RUN echo >&2 "****************" && echo >&2 "Disabling the daemon interface for testing".
 ENV ENABLE_INIT_DAEMON false
 ENV INIT_DAEMON_BASE_URI http://identifier/init-daemon
@@ -132,7 +132,7 @@ RUN mkdir -p "$EXEC_DIR"
 COPY exec/*  $EXEC_DIR/
 
 # copy the entrypoint driver script
-COPY driver.sh /
+COPY driver.sh setprops.sh setsources.sh /
 
 # set execution bit 
 RUN chmod +x $EXEC_DIR/* /driver.sh

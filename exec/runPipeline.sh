@@ -2,7 +2,7 @@
 
 # Script to run the entire event detection pipeline
 echo "#############################################"
-echo "Running entire bde event detection pipeline."
+echo "Running entire bde event detection pipeline.  ($0)"
 echo "#############################################"
 
 export LOG_PREFIX="pipeline_"

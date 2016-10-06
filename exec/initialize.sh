@@ -2,7 +2,7 @@
 
 # Fix relative paths
 ####################
-echo ;echo ">Running the BDE initialization script."; echo ;
+echo ;echo ">Running the BDE initialization script.($0)"; echo ;
 
 
 # get and set properties files
@@ -10,7 +10,7 @@ echo ;echo ">Running the BDE initialization script."; echo ;
 
 # get potentially user supplied properties files
 # or set the default deploy properties
-
+echo "Fetching configuration property files for each BDE event detection module."
 # news
 newsprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties";
 if [ -f "$SUPPLIED_NEWS_PROPS_FILE" ]; then
@@ -77,8 +77,8 @@ sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uo
 # unzip the local location extraction dataset 
 mkdir -p "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
 
-unzip "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/dataset.zip" -d "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
-mv "$(find $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/ -type f)"  "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv"
+unzip -q "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/dataset.zip" -d "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/"
+mv $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/*  "$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv"
 sed -i "s<polygon_extraction_sourcefile=.*<polygon_extraction_sourcefile=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/local/dataset.csv<g" "$locationprops"
 
 
@@ -99,7 +99,7 @@ fi
 
 # set profiles path for language detection
 profilesPath="$BDE_ROOT_DIR/BDEEventDetection/BDEBase/res/profiles"
-[ ! -d profilesPath ] && >&2 echo "Lang detection profiles do not exist at directory $profilesPath"
+[ ! -d "$profilesPath" ] && >&2 echo "Lang detection profiles do not exist at directory $profilesPath"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$newsprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$blogprops"
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$twitterprops"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo ">>>Running twitter crawler."
+echo ">>>Running twitter crawler. ($0)"
 
 if [ -z $JARCLASSPATH ]; then
 	bash $EXEC_DIR/setClassPath.sh

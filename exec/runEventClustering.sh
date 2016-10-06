@@ -1,7 +1,7 @@
 
 #!/usr/bin/env bash
 
-echo ">>>>Running event clusterer."
+echo ">>>Running event clusterer. ($0)"
 
 if [ -z $JARCLASSPATH ]; then
 	bash $EXEC_DIR/setClassPath.sh
