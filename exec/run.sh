@@ -69,6 +69,7 @@ if [ $# -eq  1 ] ; then
 		echo
 		cat "$SUPPLIED_CRONTAB_FILE"
 		echo
+		echo "Note: make sure the script invoked is executable."
 		echo  "Starting & scheduling."
 		# start cron, register the tab and exit.
 		service cron start
