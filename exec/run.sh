@@ -74,7 +74,7 @@ if [ $# -eq  1 ] ; then
 		# start cron, register the tab and exit.
 		service cron start
 		crontab $SUPPLIED_CRONTAB_FILE
-		cat "Submitted crontab [$SUPPLIED_CRONTAB_FILE]  at [$date]." >> "$LOG_DIR/cron.log"
+		cat "Submitted crontab [$SUPPLIED_CRONTAB_FILE]  at [$(date)]." >> "$LOG_DIR/cron.log"
 		exit 0
 	fi
 elif [ $# -gt 1 ] ; then

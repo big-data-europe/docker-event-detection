@@ -51,7 +51,7 @@ if [ -f "$twitterfile" ]; then
 	                sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$twitterpropsfile"
 	        fi
 	else
-		>&2 printf "# twitter credentials format expected:\ntwitterConsumerKey\ntwitterConsumerKeySecret\ntwitterAccessTokken\ntwitterAccessTokkenSecret\n";
+		>&2 printf "(!)Twitter credentials error. format expected:\ntwitterConsumerKey\ntwitterConsumerKeySecret\ntwitterAccessTokken\ntwitterAccessTokkenSecret\n";
 	fi
 
 
@@ -96,7 +96,7 @@ if [  -f "$cassandrafile" ] ; then
 		sed -i "s/cassandra_cluster_name.*/cassandra_cluster_name=$cassandraCluster/g" $f
 	done
 	else
-		>&2 printf "# cassandra connection format expected:\ncassandra_hosts\ncassandra_port\ncassandra_keyspace\ncassandra_cluster_name\n";
+		>&2 printf "(!)Cassandra connection params error. Format expected:\ncassandra_hosts\ncassandra_port\ncassandra_keyspace\ncassandra_cluster_name\n";
 	fi
 
 
@@ -136,7 +136,7 @@ if [ -f "$mysqlfile" ]; then
 			sed -i "s<databasePassword.*<databasePassword=$databasePassword<g" $f
 		done
 	else
-		>&2 printf "# mysql connections format expected:\ndatabaseHost\ndatabaseName\ndatabaseUsername\ndatabasePassword\n";
+		>&2 printf "(!) Mysql connection parameters error. Format expected:\ndatabaseHost\ndatabaseName\ndatabaseUsername\ndatabasePassword\n";
 	fi
 
 	else
