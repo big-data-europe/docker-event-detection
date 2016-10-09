@@ -50,7 +50,7 @@ fi
 # clustering
 clusterprops="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/clustering.properties";
 if [ -f "$SUPPLIED_CLUSTER_PROPS_FILE" ]; then
-	echo "Fetching user supplied twitter properties."
+	echo "Fetching user supplied clustering properties."
 	cp "$SUPPLIED_CLUSTER_PROPS_FILE" "$clusterprops"
 else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/clustering.properties" "$clusterprops"
