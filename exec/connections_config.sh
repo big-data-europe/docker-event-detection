@@ -27,7 +27,7 @@ echo "Setting repository connection parameters and twitter credentials. ($0)"
 # twitterAccessTokkenSecret
 twitterfile="$CONNECTIONS_CONFIG_FOLDER/twitter.conf"
 if [ -f "$twitterfile" ]; then
-	if [ "$(wc -l < $twitterfile)" -eq 4 ]; then
+	if [ "$(grep -c ^  $twitterfile)" -eq 4 ]; then
 		twitterConsumerKey="$(cat $twitterfile | grep -v '#' | head -1 | tail -1)"
 		twitterConsumerKeySecret="$(cat $twitterfile | grep -v '#' | head -2 | tail -1)"
 		twitterAccessTokken="$(cat $twitterfile | grep -v '#' | head -3 | tail -1)"
@@ -72,7 +72,7 @@ fi
 cassandrafile="$CONNECTIONS_CONFIG_FOLDER/cassandra.conf"
 
 if [  -f "$cassandrafile" ] ; then
-	if [ "$(wc -l < $cassandrafile)" -eq 4 ]; then
+	if [ "$(grep -c ^  $cassandrafile)" -eq 4 ]; then
 
 	cassandraHost="$(cat $cassandrafile | grep -v '#' | head -1 | tail -1)"
 	cassandraPort="$(cat $cassandrafile | grep -v '#' | head -2 | tail -1)"
@@ -112,7 +112,7 @@ fi
 # databasePassword
 mysqlfile="$CONNECTIONS_CONFIG_FOLDER/mysql.conf"
 if [ -f "$mysqlfile" ]; then
-	if [ "$(wc -l < $mysqlfile)" -eq 4 ]; then
+	if [ "$(grep -c ^  $mysqlfile)" -eq 4 ]; then
 
 		databaseHost="$(cat $mysqlfile | grep -v '#' | head -1 | tail -1)"
 		databaseName="$(cat $mysqlfile | grep -v '#' | head -2 | tail -1)"

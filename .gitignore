@@ -1,8 +1,6 @@
 mountdir/*
 launch.sh
-sshauth/*
-Dockerfile-local
-loc.sh
-locrun.sh
 deprecated/*
 cluster.sh
+build/sshauth/*
+build/repoPath

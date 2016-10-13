@@ -1,0 +1,5 @@
+Host hostname
+	HostName hostIPAddress
+	User username
+	IdentityFile path/to/my/key
+	StrictHostKeyChecking no

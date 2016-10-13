@@ -39,17 +39,18 @@ ENV BDE_ROOT_DIR "/bde"
 RUN mkdir -p "$BDE_ROOT_DIR"
 
 # Clone BDE components
-RUN echo 'Getting BDE components.'
-RUN cd /bde; \
-git clone https://github.com/npit/bde-event-detection-sc7.git BDEEventDetection/
-
-RUN  cd "/bde/BDEEventDetection"; git checkout deploy; 
+RUN echo 'Getting BDE source components.'
+RUN mkdir /build
+COPY build /build
+RUN build/getSourceCode.sh $BDE_ROOT_DIR/BDEEventDetection/
+RUN rm -rf /build
+RUN  cd "$BDE_ROOT_DIR/BDEEventDetection"; git checkout deploy; 
 
 RUN echo 'Building.'
 # Build
 # make sure you copy maven settings and compile in a single run command. The maven container will delete ~/.m2 contents
 # as each intermediate container for each command exits
-RUN cd /bde/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn package;
+RUN cd $BDE_ROOT_DIR/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn package;
 
 ########################################
 ##  Add and configure interface 
