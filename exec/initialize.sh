@@ -73,13 +73,8 @@ sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEv
 sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uoa.gr:8080/changeDetection/location/geocode<g" "$locationprops"
 sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locationprops"
 
-twitterqueries="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries"
-if [ -f "$SUPPLIED_TWITTER_QUERIES_FILE" ]; then
-	echo "Fetching user supplied twitter queries."
-	cp "$SUPPLIED_TWITTER_QUERIES_FILE" "$twitterqueries"
-else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/twitter.queries" "$twitterqueries"
-fi
+# twitter
+
 twitterprops="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
 if [ -f "$SUPPLIED_TWITTER_PROPS_FILE" ]; then
 	echo "Fetching user supplied twitter properties."
@@ -87,6 +82,25 @@ if [ -f "$SUPPLIED_TWITTER_PROPS_FILE" ]; then
 else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/twitter.properties" "$twitterprops"
 fi
+twitterqueries="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries"
+if [ -f "$SUPPLIED_TWITTER_QUERIES_FILE" ]; then
+	echo "Fetching user supplied twitter queries."
+	cp "$SUPPLIED_TWITTER_QUERIES_FILE" "$twitterqueries"
+else
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/twitter.queries" "$twitterqueries"
+fi
+twitteraccounts="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.accounts"
+if [ -f "$SUPPLIED_TWITTER_ACCOUNTS_FILE" ]; then
+	echo "Fetching user supplied twitter accounts."
+	cp "$SUPPLIED_TWITTER_ACCOUNTS_FILE" "$twitteraccounts"
+else
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/twitter.accounts" "$twitteraccounts"
+fi
+
+sed -i "s<queries_source=.*<queries_source=$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries<g" "$twitterprops"
+sed -i "s<accounts_source=.*<accounts_source=$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.accounts<g" "$twitterprops"
+
+
 
 # set profiles path for language detection
 profilesPath="$BDE_ROOT_DIR/BDEEventDetection/BDEBase/res/profiles"
