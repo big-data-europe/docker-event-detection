@@ -5,8 +5,8 @@
 
 echo ">Running BDE Event detection wrapper execution script at mode [$1]. ($0)"
 
-singleRunModes="news tweets-search tweets-monitor tweets-stream blogs location cluster pipeline"
-runscripts=(runNewsCrawling.sh runTwitterCrawling.sh runTwitterCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
+singleRunModes="news tweets blogs location cluster pipeline"
+runscripts=(runNewsCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
 
 function usage {
 	echo "Module running usage:"
@@ -34,20 +34,8 @@ if [ $# -eq  1 ] ; then
 		for mode in $singleRunModes; do
 			arg=""
 			if [ "$mode" == "$1" ] ; then 
-				# specify twitter run mode
-				if [ ! -z "$( echo $mode | grep tweets)" ]; then
-					echo -n "Twitter crawler mode : "
-	                                if [ ! -z "$( echo $mode | grep  search)" ]; then
-                                		arg="search"
-					elif [ ! -z "$(echo $mode | grep  monitor)" ]; then
-                                                arg="monitor"
-					elif [ ! -z "$(echo $mode | grep  stream)" ]; then
-                                                arg="stream"
-					fi
-					echo "[$arg]"
-				fi
 				# run the script and exit
-				bash "$EXEC_DIR/${runscripts[$index]}" "$arg"
+				bash "$EXEC_DIR/${runscripts[$index]}"
 				exit 0
 			else
 				index=$((index+1))

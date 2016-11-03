@@ -4,3 +4,4 @@ deprecated/*
 cluster.sh
 build/sshauth/*
 build/repoPath
+run.sh

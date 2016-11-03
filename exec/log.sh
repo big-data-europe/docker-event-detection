@@ -5,6 +5,7 @@
 filename="$1"
 if [ $# -lt 1 ]; then
 	# check latest
-	filename="$LOG_DIR/$(ls $LOG_DIR -1t | head -1 )"
+	filename="$(ls $LOG_DIR -1t | head -1 )"
 fi
-cat "$filename"
+
+cat "${LOG_DIR}${filename}"

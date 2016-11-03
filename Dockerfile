@@ -44,7 +44,7 @@ RUN mkdir /build
 COPY build /build
 RUN build/getSourceCode.sh $BDE_ROOT_DIR/BDEEventDetection/
 RUN rm -rf /build
-RUN  cd "$BDE_ROOT_DIR/BDEEventDetection"; git checkout deploy; 
+RUN  cd "$BDE_ROOT_DIR/BDEEventDetection"; git checkout test; 
 
 RUN echo 'Building.'
 # Build
