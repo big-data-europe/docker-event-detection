@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 # Wrapper for initialization execution script
 
-# check whether initialization already took place
+# check whether initialization already took place to abort
 if [ -f  "$INITIALIZATION_FILE" ]; then
-	echo "Initialization has already been performed, returning."
-	exit 0
+	# do not abort if it was asked to run initialization via the init argument
+	if [ "$1" == "init" ]; then
+		echo "(!) Forcing re-initialization due to parameter [$1]"
+	else
+		echo "Initialization has already been performed, returning."
+		exit 0
+	fi
 fi
-
+# check whether we need to actually run the initialization:
 # check whether the "help" argument was provided
 # print help
 if [ "$#" -eq 1  ] && [ "$1" == "help" ]; then
@@ -19,6 +24,9 @@ if [ "$#" -eq 1  ] && [ "$1" == "help" ]; then
 	echo "twitter queries [$SUPPLIED_TWITTER_QUERIES_FILE]"
 	echo "twitter properties [$SUPPLIED_TWITTER_PROPS_FILE]" 
 	echo
+	exit 0
+elif [ "$1" == "rest" ]; then
+	echo "Will not run initialization in rest mode."
 	exit 0
 fi
 

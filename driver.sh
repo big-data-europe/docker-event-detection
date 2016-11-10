@@ -9,5 +9,5 @@ if [ -z $BDE_ROOT_DIR ]; then
 	exit 1
 fi
 
-bash $DAEMON_DIRECTORY/daemonInterface.sh $1
+bash $DAEMON_DIRECTORY/daemonInterface.sh "$@"
 echo "-Done running BDE event detection driver script."

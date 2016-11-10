@@ -2,6 +2,5 @@ mountdir/*
 launch.sh
 deprecated/*
 cluster.sh
-build/sshauth/*
-build/repoPath
+sshauth*
 run.sh

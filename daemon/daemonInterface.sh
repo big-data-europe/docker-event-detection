@@ -52,7 +52,6 @@ if [ $ENABLE_INIT_DAEMON = "true" ]; then
 
 	export INIT_DAEMON_BASE_URI
 	# Maybe you want to set the step name
-	#INIT_DAEMON_STEP="TEST_STEP"
 	echo 
 	echo "Running step $INIT_DAEMON_STEP."
 
@@ -85,7 +84,7 @@ fi
 
 # put execution code of the container here
 
-$EXEC_DIR/run.sh $1
+$EXEC_DIR/run.sh "$@"
 
 
 # notify end of execution

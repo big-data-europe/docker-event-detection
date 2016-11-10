@@ -19,6 +19,8 @@ ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
 ARG SUPPLIED_TWITTER_ACCOUNTS_FILE="$MOUNT_DIR/twitteraccounts"
 ARG SUPPLIED_CRONTAB_FILE="$MOUNT_DIR/bdetab"
 
+ARG REST_SERVICES_DIR="/rest"
+
 LABEL multi.label1="BDE" \
       multi.label2="Event Detection"
 
@@ -72,6 +74,9 @@ ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
 ENV SUPPLIED_TWITTER_ACCOUNTS_FILE="$SUPPLIED_TWITTER_ACCOUNTS_FILE"
 ENV SUPPLIED_CRONTAB_FILE="$SUPPLIED_CRONTAB_FILE"
 ENV DAEMON_DIRECTORY "$DAEMON_DIRECTORY"
+
+ENV REST_SERVICES_DIR "$REST_SERVICES_DIR"
+
 
 # create  directories
 RUN mkdir -p $MOUNT_DIR
@@ -143,6 +148,12 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 # store the environment variables on a file to help with
 # cron-scheduled runs
 RUN printenv > ~/envvars
+
+
+# rest services
+RUN ls
+COPY rest $REST_SERVICES_DIR
+RUN $REST_SERVICES_DIR/getSourceCodeRest.sh $REST_SERVICES_DIR
 
 # Define default command.
 CMD ["/driver.sh"]
