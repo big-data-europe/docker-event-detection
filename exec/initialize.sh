@@ -97,8 +97,18 @@ else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/twitter.accounts" "$twitteraccounts"
 fi
 
+
+if [ -f "$SUPPLIED_TWITTER_RUNMODE_FILE" ]; then
+	echo -n "Fetching user supplied twitter run mode :"
+	twitterRunMode="$(cat $SUPPLIED_TWITTER_RUNMODE_FILE | head -1 | awk '{$1=$1;print}')"
+	[ "$twitterRunMode" == "" ] && >&2 echo "Supplied empty twitter run mode file." && exit 1
+	echo "$twitterRunMode"
+	sed -i "s/operation_mode=.*/operation_mode=$twitterRunMode/g" "$twitterprops"
+fi
+
 sed -i "s<queries_source=.*<queries_source=$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.queries<g" "$twitterprops"
 sed -i "s<accounts_source=.*<accounts_source=$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.accounts<g" "$twitterprops"
+
 
 
 

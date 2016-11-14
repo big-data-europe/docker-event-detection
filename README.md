@@ -13,14 +13,14 @@ $ docker pull bde2020/event-detection
 ### From the Dockerfile
 Build the docker image by cloning this repository, navigating to its directory and running
 ```bash
-$ docker build -t bde_ed.
+$ docker build -t event-detection .
 ```
 to build and specify a name and tag for the image you can use the `-t imagename:imagetag` arguments. 
 
 ### Run
 To run a named container and land on an interactive shell, execute
 ```bash
-docker run --name="bderun" -it bde_ed bash
+docker run --name="ed" -it event-detection bash
 ```
 
 See the [Docker Docs](https://docs.docker.com/) for further information.
@@ -29,7 +29,7 @@ See the [Docker Docs](https://docs.docker.com/) for further information.
 ### Build arguments
 Everything should work with the defaults for the build arguments. If however there is some conflict with the preset values and your application, you can modify them  using
 ```bash
-docker build -t bde_ed --build-arg argument_name=argument_value .
+docker build -t event-detection --build-arg argument_name=argument_value .
 ```
 Note that modifying a build argument requires rebuilding the docker image. 
 
@@ -47,7 +47,7 @@ $ docker run -it bde_ed bash
 $ /driver.sh news
 ```
 Passing `pipeline` or no arguments at all, runs all the modules sequentially in the order `newscrawler`, `twittercrawler`, `locationextractor`, `clusterer`.
-To run a cronjob, use the `cron` argument and provide a crontab at `$MOUNT_DIR/bdetab`. Note that to be able to run a module in a cronjob you need to set up the environment in the system shell cron will launch, with all required bde environment variables. To this end, all required variables are stored in `/root/envvars` during build so you can source them easily. So for example, to run the twitter crawler daily at noon, one should create and execute a crontab like the one below:
+To run a cronjob, use the `cron` argument and provide a crontab at `$MOUNT_DIR/bdetab`. Note that to be able to run a module in a cronjob you need to set up the environment in the `sh` system shell cron will launch, with all required bde environment variables. To this end, all required variables are stored in `/root/envvars` during build so you can source them easily. So for example, to run the twitter crawler daily at noon, one should create and execute a crontab like the one below:
 ```bash
 $ docker run -it bde_ed bash
 $ cat /mnt/bdetab
@@ -95,7 +95,9 @@ where the sensitive information is replaced with dummy values.
 If you need cassandra to operate on a port in the host machine (for example if the cassandra repository is accessed via ssh port forwarding to a remote machine) run the container with the `--net=host` parameter and use `127.0.0.1` and the same port number in the connections file.
 
 
-You can provide feed urls for the news crawler and twitter search literals for the twitter crawler by providing `$MOUNTDIR/newsurls` and `$MOUNTDIR/twitterqueries` files. News crawling urls should be newline-delimited RSS feeds, and twitter queries should additionally follow the format `searchtopic***language***maxnumber`.
-If you know what you're doing, you can specify detailed run properties for each module in the same way. Check the `Dockerfile` for the relevant filenames in the build arguments.
+You can provide feed urls for the news crawler  by providing `$MOUNTDIR/newsurls`,  files. News crawling urls should be newline-delimited RSS feeds. The twitter crawler receives twitter search literals or monitor accounts from files in `$MOUNTDIR/twitterqueries` and `$MOUNTDIR/twitteraccounts`. The crawler run mode can be specified by providing a `$MOUNTDIR/twitterrunmode` file, containg one of the available run modes: `search`,`monitor`,`stream` or `fetch`.
+Supplied twitter queries should follow the format `searchtopic***language***maxnumber`and accounts should be structured as `accountName***true` per line.
+
+If you know what you're doing, you can specify entire detailed run property files for each module in the same way. Check the `Dockerfile` for the relevant filenames in the build arguments.
 ### Logs
 Run logs are located in `/var/log/bde/`, timestamped and named as per module and run mode (`pipeline`, `cron`,`initialization` or regular single-module name for isolated, one-time runs). 
