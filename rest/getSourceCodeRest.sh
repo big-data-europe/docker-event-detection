@@ -69,3 +69,5 @@ for p in $(ls $REST_SERVICES_DIR -1); do
 		./install.sh; 
 	fi
 done
+
+exit 0
