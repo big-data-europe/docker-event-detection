@@ -8,4 +8,4 @@ if [ $# -lt 1 ]; then
 	filename="$(ls $LOG_DIR -1t | head -1 )"
 fi
 
-cat "${LOG_DIR}${filename}"
+cat "${LOG_DIR}/${filename}"
