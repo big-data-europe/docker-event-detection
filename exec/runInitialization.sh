@@ -11,24 +11,8 @@ if [ -f  "$INITIALIZATION_FILE" ]; then
 		exit 0
 	fi
 fi
-# check whether we need to actually run the initialization:
-# check whether the "help" argument was provided
-# print help
-if [ "$#" -eq 1  ] && [ "$1" == "help" ]; then
-	echo "Initialization usage:"
-	echo "User-provided override file (container) paths:"
-	echo "news properties [$SUPPLIED_NEWS_PROPS_FILE]"
-	echo "news urls [$SUPPLIED_NEWS_URLS_FILE]"
-	echo "clustering properties [$SUPPLIED_CLUSTER_PROPS_FILE]"
-	echo "location properties [$SUPPLIED_LOCATION_PROPS_FILE]"
-	echo "twitter queries [$SUPPLIED_TWITTER_QUERIES_FILE]"
-	echo "twitter properties [$SUPPLIED_TWITTER_PROPS_FILE]" 
-	echo
-	exit 0
-elif [ "$1" == "rest" ]; then
-	echo "Will not run initialization in rest mode."
-	exit 0
-fi
+
+# run the initialization
 
 # set up an initialization log file
 logfile="$($EXEC_DIR/setLogfileName.sh initialization $LOG_DIR "")"

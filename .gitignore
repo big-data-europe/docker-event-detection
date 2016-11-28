@@ -1,6 +1,4 @@
 mountdir/*
-launch.sh
 deprecated/*
-cluster.sh
 sshauth*
 run.sh

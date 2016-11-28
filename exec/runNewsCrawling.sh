@@ -8,7 +8,7 @@ if [ -z $JARCLASSPATH ]; then
 fi
 
 modulefolder="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler"
-configfile="$modulefolder/res/newscrawler_configuration.properties"
+configfile="$modulefolder/res/news.properties"
 
 
 execute="java -cp $JARCLASSPATH  gr.demokritos.iit.crawlers.rss.NewsCrawler $configfile"

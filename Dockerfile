@@ -8,16 +8,15 @@ ARG MOUNT_DIR="/mnt"
 ARG LOG_DIR="/var/log/bde"
 
 ARG CONNECTIONS_CONFIG_FOLDER="$MOUNT_DIR/connections"
-ARG SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/newsproperties"
-ARG SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/newsurls"
-ARG SUPPLIED_BLOG_PROPS_FILE="$MOUNT_DIR/blogproperties"
-ARG SUPPLIED_BLOG_URLS_FILE="$MOUNT_DIR/blogsurls"
-ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clusterproperties"
-ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/locationproperties"
-ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitterqueries"
-ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitterproperties"
-ARG SUPPLIED_TWITTER_ACCOUNTS_FILE="$MOUNT_DIR/twitteraccounts"
-ARG SUPPLIED_TWITTER_RUNMODE_FILE="$MOUNT_DIR/twitterrunmode"
+ARG SUPPLIED_NEWS_PROPS_FILE="$MOUNT_DIR/news.properties"
+ARG SUPPLIED_NEWS_URLS_FILE="$MOUNT_DIR/news.urls"
+ARG SUPPLIED_BLOG_PROPS_FILE="$MOUNT_DIR/blog.properties"
+ARG SUPPLIED_BLOG_URLS_FILE="$MOUNT_DIR/blog.urls"
+ARG SUPPLIED_CLUSTER_PROPS_FILE="$MOUNT_DIR/clustering.properties"
+ARG SUPPLIED_LOCATION_PROPS_FILE="$MOUNT_DIR/location.properties"
+ARG SUPPLIED_TWITTER_QUERIES_FILE="$MOUNT_DIR/twitter.queries"
+ARG SUPPLIED_TWITTER_PROPS_FILE="$MOUNT_DIR/twitter.properties"
+ARG SUPPLIED_TWITTER_ACCOUNTS_FILE="$MOUNT_DIR/twitter.accounts"
 ARG SUPPLIED_CRONTAB_FILE="$MOUNT_DIR/bdetab"
 
 ARG REST_SERVICES_DIR="/rest"
@@ -30,12 +29,12 @@ LABEL multi.label1="BDE" \
 ########################################
 # Install utils and tools
 RUN echo "Installing prerequisites"
-RUN apt-get update 
-RUN apt-get install -y git curl cron
+RUN apt-get -qq update 
+RUN apt-get -qq install -y git curl cron
 
 # for debugging, TODO Remove
 RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
-RUN apt-get install -y nano netcat
+RUN apt-get -qq install -y nano netcat
 
   
 # Make and define working directory.
@@ -43,18 +42,26 @@ ENV BDE_ROOT_DIR "/bde"
 RUN mkdir -p "$BDE_ROOT_DIR"
 
 # Clone BDE components
+
 RUN echo 'Getting BDE source components.'
 RUN mkdir /build
 COPY build /build
 RUN build/getSourceCode.sh $BDE_ROOT_DIR/BDEEventDetection/
-RUN rm -rf /build
-RUN  cd "$BDE_ROOT_DIR/BDEEventDetection"; git checkout deploy; 
 
+RUN  cd "$BDE_ROOT_DIR/BDEEventDetection"; BRANCH="$(cat /branchname)"; >&2 echo "Using branch [$BRANCH]";  git checkout $BRANCH; 
 RUN echo 'Building.'
 # Build
 # make sure you copy maven settings and compile in a single run command. The maven container will delete ~/.m2 contents
 # as each intermediate container for each command exits
-RUN cd $BDE_ROOT_DIR/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn package;
+RUN cd $BDE_ROOT_DIR/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn -q package;
+RUN rm -rf /build /branchname
+
+########################################
+##  Get and build miscellaneous sources
+########################################
+# rest services
+COPY rest $REST_SERVICES_DIR
+RUN $REST_SERVICES_DIR/getSourceCodeRest.sh $REST_SERVICES_DIR
 
 ########################################
 ##  Add and configure interface 
@@ -73,7 +80,6 @@ ENV SUPPLIED_LOCATION_PROPS_FILE="$SUPPLIED_LOCATION_PROPS_FILE"
 ENV SUPPLIED_TWITTER_QUERIES_FILE="$SUPPLIED_TWITTER_QUERIES_FILE"
 ENV SUPPLIED_TWITTER_PROPS_FILE="$SUPPLIED_TWITTER_PROPS_FILE"
 ENV SUPPLIED_TWITTER_ACCOUNTS_FILE="$SUPPLIED_TWITTER_ACCOUNTS_FILE"
-ENV SUPPLIED_TWITTER_RUNMODE_FILE="$SUPPLIED_TWITTER_RUNMODE_FILE"
 ENV SUPPLIED_CRONTAB_FILE="$SUPPLIED_CRONTAB_FILE"
 ENV DAEMON_DIRECTORY "$DAEMON_DIRECTORY"
 
@@ -141,8 +147,8 @@ ENV INITIALIZATION_FILE="$EXEC_DIR/.initialized"
 RUN mkdir -p "$EXEC_DIR"
 COPY exec/*  $EXEC_DIR/
 
-# copy the entrypoint driver script
-COPY driver.sh setprops.sh setsources.sh /
+# copy the entrypoint driver script and utility scripts
+COPY driver.sh setprops.sh setsources.sh setauth.sh skel.sh /
 
 # set execution bit 
 RUN chmod +x $EXEC_DIR/* /driver.sh
@@ -152,9 +158,7 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 RUN printenv > ~/envvars
 
 
-# rest services
-COPY rest $REST_SERVICES_DIR
-RUN $REST_SERVICES_DIR/getSourceCodeRest.sh $REST_SERVICES_DIR
+
 
 # Define default command.
 CMD ["/driver.sh"]

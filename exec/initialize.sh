@@ -12,39 +12,39 @@ echo ;echo ">Running the BDE initialization script.($0)"; echo ;
 # or set the default deploy properties
 echo "Fetching configuration property files for each BDE event detection module."
 # news
-newsprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties";
+newsprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news.properties";
 if [ -f "$SUPPLIED_NEWS_PROPS_FILE" ]; then
 	echo "Fetching user supplied news properties."
 	cp "$SUPPLIED_NEWS_PROPS_FILE" "$newsprops"
 else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/newscrawler_configuration.properties" "$newsprops"
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/news.properties" "$newsprops"
 fi
 
-sed -i "s<urls_file_name=.*<urls_file_name=$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news_urls.txt<g" "$newsprops"
-newsurls="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news_urls.txt";
+sed -i "s<urls_file_name=.*<urls_file_name=$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news.urls<g" "$newsprops"
+newsurls="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news.urls";
 if [ -f "$SUPPLIED_NEWS_URLS_FILE" ]; then
 	echo "Fetching user supplied news urls."
 	cp "$SUPPLIED_NEWS_URLS_FILE" "$newsurls"
 else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/news_urls.txt" "$newsurls"
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/news.urls" "$newsurls"
 fi
 
 # blogs
-blogprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogcrawler_configuration.properties";
+blogprops="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogs.properties";
 if [ -f "$SUPPLIED_BLOG_PROPS_FILE" ]; then
 	echo "Fetching user supplied blog properties."
 	cp "$SUPPLIED_BLOG_PROPS_FILE" "$blogprops"
 else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/blogcrawler_configuration.properties" "$blogprops"
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/blogs.properties" "$blogprops"
 fi
 
-sed -i "s<urls_file_name=.*<urls_file_name=$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blog_urls.txt<g" "$blogprops"
-blogurls="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blog_urls.txt";
+sed -i "s<urls_file_name=.*<urls_file_name=$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogs.urls<g" "$blogprops"
+blogurls="$BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogs.urls";
 if [ -f "$SUPPLIED_BLOG_URLS_FILE" ]; then
 	echo "Fetching user supplied blog urls."
 	cp "$SUPPLIED_BLOG_URLS_FILE" "$blogurls"
 else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/blog_urls.txt" "$blogurls"
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/blogs.urls" "$blogurls"
 fi
 
 # clustering
@@ -60,12 +60,12 @@ sed -i "s<stopwords_file_path=.*<stopwords_file_path=$BDE_ROOT_DIR/BDEEventDetec
 
 # location
 ##########
-locationprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties";
+locationprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location.properties";
 if [ -f "$SUPPLIED_LOCATION_PROPS_FILE" ]; then
 	echo "Fetching user supplied location properties."
 	cp "$SUPPLIED_LOCATION_PROPS_FILE" "$locationprops"
 else
-	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/location_extraction.properties" "$locationprops"
+	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/location.properties" "$locationprops"
 fi
 # set hard paths
 sed -i "s<ne_models_path=.*<ne_models_path=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/ne_models<g" "$locationprops"
@@ -120,7 +120,7 @@ sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$
 sed -i "s<lang_detection_profiles=.*<lang_detection_profiles=$profilesPath<g" "$twitterprops"
 # initialize cassandra connections and twitter credentials. This is useful to quickly change host+port
 # without supplying new properties files for each module
-$EXEC_DIR/connections_config.sh "$CONNECTIONS_CONFIG_FILENAME" 
+$EXEC_DIR/connections_config.sh
 
 echo "It's done!" > "$INITIALIZATION_FILE"
 

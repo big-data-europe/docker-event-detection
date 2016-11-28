@@ -7,7 +7,7 @@ if [ -z $JARCLASSPATH ]; then
 fi
 
 modulefolder="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction"
-locproperties="$modulefolder/res/location_extraction.properties"
+locproperties="$modulefolder/res/location.properties"
 
 execute="java -cp $JARCLASSPATH  gr.demokritos.iit.location.schedule.LocationExtraction $locproperties"
 #echo "$execute"

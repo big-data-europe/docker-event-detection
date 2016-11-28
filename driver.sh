@@ -8,6 +8,9 @@ if [ -z $BDE_ROOT_DIR ]; then
 	echo >&2"BDE_ROOT_DIR is not set! Exiting."
 	exit 1
 fi
+# setup the daemon
+bash $DAEMON_DIRECTORY/setup.sh 
 
-bash $DAEMON_DIRECTORY/daemonInterface.sh "$@"
+bash $EXEC_DIR/run.sh "$@"
+
 echo "-Done running BDE event detection driver script."

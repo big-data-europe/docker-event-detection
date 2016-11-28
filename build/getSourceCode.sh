@@ -11,6 +11,9 @@ if [ -d "$sshfolder" ]; then
 	repoPathFile="$sshfolder/repoPath"
 	! /build/validatePath.sh  "$repoPathFile"  && exit 1
 	repoPath="$(cat $repoPathFile | head -1 | awk '{$1=$1;print}')"
+	branch="$(cat $repoPathFile | head -2 | tail -1 | awk '{$1=$1;print}')"
+	>&2 echo "Using branch [$branch] from local repository."
+	echo "$branch" > /branchname
 	echo "Fetching from local ssh repo:Reading [$sshfolder]"
 	mkdir /root/.ssh && cp "$sshfolder/"* /root/.ssh/
 
@@ -29,8 +32,12 @@ else
 	repoPathFile="/build/repoPath"
 	! /build/validatePath.sh  "$repoPathFile"  && exit 1
 	repoPath="$(cat $repoPathFile | head -1 | awk '{$1=$1;print}')"
+	branch="$(cat $repoPathFile | head -2 | tail -1 | awk '{$1=$1;print}')"
+	>&2 echo "Using branch [$branch] from remote repository."
+	echo "$branch" > /branchname
 	echo "No ssh folder found at [$sshfolder], fetching from the web repo: [$repoPath]"
 	
+
 
 	git clone "$repoPath" "$destinationFolder"
 fi

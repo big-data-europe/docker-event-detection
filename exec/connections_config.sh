@@ -9,9 +9,9 @@ echo ">Running the connection parameters setting script. ($0)"
 # property files to modify
 paths="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/clustering.properties"
 paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location_extraction.properties"
-paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/newscrawler_configuration.properties"
-paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogcrawler_configuration.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/location.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/news.properties"
+paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogs.properties"
 
 # newline-delimit, let's not change IFS
 paths="$(echo $paths | sed  's/ /\n/g' )"

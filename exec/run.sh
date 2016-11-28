@@ -8,24 +8,56 @@ echo ">Running BDE Event detection wrapper execution script at mode [$1]. ($0)"
 singleRunModes="news tweets blogs location cluster pipeline"
 runscripts=(runNewsCrawling.sh  runTwitterCrawling.sh runBlogCrawling.sh runLocationExtraction.sh runEventClustering.sh   runPipeline.sh)
 
-function usage {
+function moduleusage {
+	echo 
 	echo "Module running usage:"
-	echo -n "$0 [ $(echo $singleRunModes | sed 's/ / | /g') "
-	echo "| init | cron | rest ]" # the init run mode is handled via the initialization script wrapper
-	echo "(The argument is passed along from the driver script)"
-
+	echo "----------------------------------- "
+	echo -n "/driver.sh [ $(echo $singleRunModes | sed 's/ / | /g') "
+	echo "| init | cron | rest <restname> ]" # the init run mode is handled via the initialization script wrapper
+	echo "Availabe rest services:"
+	echo "[$(ls $REST_SERVICES_DIR)]"
+	echo
 }
 
+function info {
+	echo
+	echo
+	echo "Container important directories:"
+	echo "---------------------------------- "
+	echo "BDE sourcesfolder [$BDE_ROOT_DIR]."
+	echo "REST services sources folder [$REST_SERVICES_DIR]."
+	echo "Daemon folder [$DAEMON_DIRECTORY]."
+	echo "Logs folder [$LOG_DIR]."
+	echo "Mount folder [$MOUNT_DIR]."
+	echo
+	echo "User-provided module parameters:"
+	echo "Connections auth folder [$CONNECTIONS_CONFIG_FOLDER]. See connections_config.sh for details"
+	echo "news properties [$SUPPLIED_NEWS_PROPS_FILE]"
+	echo "news urls [$SUPPLIED_NEWS_URLS_FILE]"
+	echo "clustering properties [$SUPPLIED_CLUSTER_PROPS_FILE]"
+	echo "location properties [$SUPPLIED_LOCATION_PROPS_FILE]"
+	echo "twitter queries [$SUPPLIED_TWITTER_QUERIES_FILE]"
+	echo "twitter properties [$SUPPLIED_TWITTER_PROPS_FILE]" 
+	echo "twitter accounts [$SUPPLIED_TWITTER_ACCOUNTS_FILE]" 
+	echo "blogs properties [$SUPPLIED_BLOG_PROPS_FILE]"
+	echo "blogs urls [$SUPPLIED_BLOG_URLS_FILE]"
+	echo "bde crontab [$SUPPLIED_CRONTAB_FILE]"
+	
+	echo
+}
 
 
 
 if [ $# -gt  0 ] ; then
 	# provided an argument
 	if [ $1 == "help" ]; then
-		usage;
+		moduleusage;
+		info;
 		exit 0
 	elif [ "$1" == "init" ]; then
-		: # do nothing, it's already done
+		# It was explicitly asked to initialize, not as a part of a task. Won't notify daemon.
+		# Also this explicit initialization overwrites existing ones
+		"$EXEC_DIR/runInitialization.sh" "init"
 	elif [ "$1" == "cron" ] ; then
 		# cronjob run
 		echo "Scheduling job according to crontab at [$SUPPLIED_CRONTAB_FILE]."
@@ -52,23 +84,29 @@ if [ $# -gt  0 ] ; then
 		exit 1
 	else
 		# single run of a single component
-		if [ -z $JARCLASSPATH ] &&  [ ! "$1" == "help" ] ; then
-			bash $EXEC_DIR/setClassPath.sh $1
-			export JARCLASSPATH="$(cat $CLASSPATHFILE)"
-		fi
+
 		index=0
 		for mode in $singleRunModes; do
 			arg=""
 			if [ "$mode" == "$1" ] ; then 
+				# set the class path if not already set
+				if [ -z $JARCLASSPATH ] &&  [ ! "$1" == "help" ] ; then
+					bash $EXEC_DIR/setClassPath.sh $1
+					export JARCLASSPATH="$(cat $CLASSPATHFILE)"
+				fi
 				# run the script and exit
-				bash "$EXEC_DIR/${runscripts[$index]}"
+				"$DAEMON_DIRECTORY/daemonInterface.sh" "init" "$mode" 
+				"$EXEC_DIR/runInitialization.sh"
+				"$DAEMON_DIRECTORY/daemonInterface.sh" "exec" "$mode" 
+				"$EXEC_DIR/${runscripts[$index]}"
+				"$DAEMON_DIRECTORY/daemonInterface.sh" "finish" "$mode" 
 				exit 0
 			else
 				index=$((index+1))
 			fi
 		done
 		>&2 echo "Undefined argument [$1]."
-		usage
+		moduleusage
 		exit 1	
 	fi
 else
