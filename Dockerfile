@@ -53,7 +53,7 @@ RUN echo 'Building.'
 # Build
 # make sure you copy maven settings and compile in a single run command. The maven container will delete ~/.m2 contents
 # as each intermediate container for each command exits
-RUN cd $BDE_ROOT_DIR/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn -q package;
+RUN cd $BDE_ROOT_DIR/BDEEventDetection; cp bde-mvn-settings.xml /root/.m2/settings.xml;  mvn -q package; cp -r /root/.m2/repository /maven-repository
 RUN rm -rf /build /branchname
 
 ########################################
