@@ -8,7 +8,7 @@ if [ -z $JARCLASSPATH ]; then
 	JARCLASSPATH="$(cat $CLASSPATHFILE)"
 fi
 
-modulefolder="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering"
+modulefolder="$BDE_ROOT_DIR/BDEEventDetection/BDEClustering"
 configfile="$modulefolder/res/clustering.properties"
 
 

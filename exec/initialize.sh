@@ -48,15 +48,15 @@ else
 fi
 
 # clustering
-clusterprops="$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/clustering.properties";
+clusterprops="$BDE_ROOT_DIR/BDEEventDetection/BDEClustering/res/clustering.properties";
 if [ -f "$SUPPLIED_CLUSTER_PROPS_FILE" ]; then
 	echo "Fetching user supplied clustering properties."
 	cp "$SUPPLIED_CLUSTER_PROPS_FILE" "$clusterprops"
 else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/clustering.properties" "$clusterprops"
 fi
-sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/en-sent.bin<g" "$clusterprops"
-sed -i "s<stopwords_file_path=.*<stopwords_file_path=$BDE_ROOT_DIR/BDEEventDetection/BDECLustering/res/stopwords_en.txt<g" "$clusterprops"
+sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDEClustering/res/en-sent.bin<g" "$clusterprops"
+sed -i "s<stopwords_file_path=.*<stopwords_file_path=$BDE_ROOT_DIR/BDEEventDetection/BDEClustering/res/stopwords_en.txt<g" "$clusterprops"
 
 # location
 ##########
