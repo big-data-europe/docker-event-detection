@@ -77,7 +77,12 @@ sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locatio
 
 # extractor 
 locextractorprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/locextractor.properties";
-cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/locextractor.properties" "$locextractorprops"
+if [ -f "$SUPPLIED_LOCATION_EXTRACTOR_FILE" ]; then
+        echo "Fetching user supplied location extractor."
+        cp "$SUPPLIED_LOCATION_EXTRACTOR_FILE" "$locextractorprops"
+else
+    cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/locextractor.properties" "$locextractorprops"
+fi
 
 # twitter
 
