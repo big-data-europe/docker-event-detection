@@ -158,7 +158,7 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 RUN printenv > ~/envvars
 
 # useful aliases
-RUN echo "alias l='ls -l'" > /root/.bashrc > 
+RUN echo "alias l='ls -l'" > /root/.bashrc 
 
 
 
