@@ -48,6 +48,7 @@ else
 fi
 
 # clustering
+############
 clusterprops="$BDE_ROOT_DIR/BDEEventDetection/BDEClustering/res/clustering.properties";
 if [ -f "$SUPPLIED_CLUSTER_PROPS_FILE" ]; then
 	echo "Fetching user supplied clustering properties."
@@ -67,11 +68,16 @@ if [ -f "$SUPPLIED_LOCATION_PROPS_FILE" ]; then
 else
 	cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/location.properties" "$locationprops"
 fi
+
 # set hard paths
 sed -i "s<ne_models_path=.*<ne_models_path=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/ne_models<g" "$locationprops"
 sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/en-sent.bin<g" "$locationprops"
 sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uoa.gr:8080/changeDetection/location/geocode<g" "$locationprops"
 sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locationprops"
+
+# extractor 
+locextractorprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/locextractor.properties";
+cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/locextractor.properties" "$locextractorprops"
 
 # twitter
 
