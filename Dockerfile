@@ -159,8 +159,10 @@ RUN chmod +x $EXEC_DIR/* /driver.sh
 # cron-scheduled runs
 RUN printenv > ~/envvars
 
-# useful aliases
+# useful aliases and misc. env settings
 RUN echo "alias l='ls -l'" > /root/.bashrc 
+ENV TERM xterm
+
 
 
 
