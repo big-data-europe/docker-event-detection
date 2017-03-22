@@ -28,9 +28,12 @@ for arg in "$@"; do
     if [ "$arg"=="src" ] || [ "$arg"=="all" ]; then
 		direc="$BDE_ROOT_DIR/BDEEventDetection/skel_property_files";
 		cp $direc/*.queries $direc/*.accounts $direc/*.urls "$MOUNT_DIR/"
+		[ ! "$arg"=="all" ] && continue
 	fi
-    
+    [  "$arg"=="all" ] && exit 0
     echo "Undefined arg [$arg]"
     exit 1
     
 done
+
+exit 0

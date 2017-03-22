@@ -144,13 +144,16 @@ ENV EXEC_DIR="/bdex"
 # the classpath with all required jars
 ENV CLASSPATHFILE $EXEC_DIR/classpathfile
 # initialization flag file
+# for driver.sh init
 ENV INITIALIZATION_FILE="$EXEC_DIR/.initialized"
+# for total initialization of the container
+ENV GLOBAL_INITIALIZATION_FILE="${INITIALIZATION_FILE}.global"
 # create folders, copy execution and auxilliary scripts
 RUN mkdir -p "$EXEC_DIR"
 COPY exec/*  $EXEC_DIR/
 
 # copy the entrypoint driver script and utility scripts
-COPY driver.sh setprops.sh setsources.sh setauth.sh skel.sh /
+COPY driver.sh setprops.sh setsources.sh setAuth.sh skel.sh healthcheck.sh entrypoint.sh /
 
 # set execution bit 
 RUN chmod +x $EXEC_DIR/* /driver.sh
@@ -167,7 +170,7 @@ ENV TERM xterm
 
 
 # Define default command.
-CMD ["/driver.sh"]
+CMD ["/entrypoint.sh"]
 
 
 

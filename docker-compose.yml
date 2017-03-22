@@ -1,0 +1,6 @@
+version: '1'
+services:
+	event-detection:
+		image: bde2020/event-detection
+		       container_name: event-detection
+		        
