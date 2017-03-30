@@ -81,7 +81,7 @@ if [ $# -gt  0 ] ; then
 		# run rest service
 		[ $# -lt 2 ] &&  >&2 echo "You need to provide the name of the rest service to run." && exit 1
 		$EXEC_DIR/runREST.sh $2
-		exit 1
+		exit 0
 	else
 		# single run of a single component
 

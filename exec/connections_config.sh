@@ -16,9 +16,21 @@ paths+=" $BDE_ROOT_DIR/BDEEventDetection/BDERSSCrawler/res/blogs.properties"
 # newline-delimit, let's not change IFS
 paths="$(echo $paths | sed  's/ /\n/g' )"
 
+function mysql_usage
+{
+	>&2 printf "(!) Mysql connection parameters error. Format expected:\ndatabaseHost\ndatabaseName\ndatabaseUsername\ndatabasePassword\n";
+}
+function cassandra_usage
+{
+	>&2 printf "(!)Cassandra connection params error. Format expected:\ncassandra_hosts\ncassandra_port\ncassandra_keyspace\ncassandra_cluster_name\n";
+}
+function twitter_usage
+{
+	>&2 printf "(!)Twitter credentials error. format expected:\ntwitterConsumerKey\ntwitterConsumerKeySecret\ntwitterAccessTokken\ntwitterAccessTokkenSecret\n";
+}
 
 echo "Setting repository connection parameters and twitter credentials. ($0)"
-
+noConnectionFlag=1
 ## TWITTER
 # format expected:
 # twitterConsumerKey
@@ -50,13 +62,14 @@ if [ -f "$twitterfile" ]; then
 	                sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$twitterpropsfile"
 	                sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$twitterpropsfile"
 	        fi
+	        noConnectionFlag=0
 	else
-		>&2 printf "(!)Twitter credentials error. format expected:\ntwitterConsumerKey\ntwitterConsumerKeySecret\ntwitterAccessTokken\ntwitterAccessTokkenSecret\n";
+		twitter_usage
 	fi
 
 
 else
-	>&2 echo "(!) No twitter credentials were found at [$twitterfile]!"
+	echo "No twitter connection configuration supplied at [$twitterfile]."
 fi
 
 
@@ -96,12 +109,12 @@ if [  -f "$cassandrafile" ] ; then
 		sed -i "s/cassandra_cluster_name.*/cassandra_cluster_name=$cassandraCluster/g" $f
 	done
 	else
-		>&2 printf "(!)Cassandra connection params error. Format expected:\ncassandra_hosts\ncassandra_port\ncassandra_keyspace\ncassandra_cluster_name\n";
+		cassandra_usage
 	fi
 
 
 else
-	>&2 echo "(!) No cassandra settings were found at [$cassandrafile]"
+	echo "No cassandra connection configuration supplied at [$cassandrafile]"
 fi
 
 # MYSQL
@@ -136,12 +149,14 @@ if [ -f "$mysqlfile" ]; then
 			sed -i "s<databasePassword.*<databasePassword=$databasePassword<g" $f
 		done
 	else
-		>&2 printf "(!) Mysql connection parameters error. Format expected:\ndatabaseHost\ndatabaseName\ndatabaseUsername\ndatabasePassword\n";
+		mysql_usage
 	fi
 
 	else
-		>&2 echo "(!) No mysql settings were found at [$mysqlfile]"
+		echo "No mysql connection configuration supplied at [$mysqlfile]"
 fi
 
-
+if [ $noConnectionFlag ]; then
+	echo >&2 "No connection configuration supplied!"
+fi
 echo "-Done setting connection information."; echo

@@ -1,6 +1,36 @@
-version: '1'
+version: '2.1'
 services:
-	event-detection:
-		image: bde2020/event-detection
-		       container_name: event-detection
-		        
+  event-detection:
+    cap_add:
+    - SYS_PTRACE
+    image: event-detection
+    container_name: event-detection
+    healthcheck:
+      test: ["CMD","/healthcheck.sh"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - default
+    environment:
+        - "constraint:node==slave3"
+        - cassandra_ip=
+        - cassandra_port=
+        - cassandra_keyspace=
+        - cassandra_cluster=
+        - twitter_key=
+        - twitter_keysec=
+        - twitter_tok=
+        - twitter_toksec=
+    depends_on:
+      cassandra-cluster-2:
+        condition: service_healthy
+    depends_on:
+      lookupservice:
+        condition: service_healthy
+    depends_on:
+      strabon:
+        condition: service_healthy
+    depends_on:
+      geotriples:
+        condition: service_healthy

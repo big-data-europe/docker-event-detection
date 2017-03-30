@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
+echo "Healthcheck..."
+# error or not done yet
+[ ! -f "$HEALTHCHECK_FILE" ] && return 1
+# more than one lines
+[ $(wc -l "$HEALTHCHECK_FILE"  | awk '{print $1}' ) -ne 1 ] && return 1
 
-if [ -f "$GLOBAL_INITIALIZATION_FILE" ]; then
-  if [ cat "$GLOBAL_INITIALIZATION_FILE" == "OK" ]; then
-    return 0
-  else return 1
-  fi
-fi
+[ "$(cat "$HEALTHCHECK_FILE")" == "OK" ] && return 0
+
 
 return 1

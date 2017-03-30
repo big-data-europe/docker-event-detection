@@ -60,7 +60,8 @@ RUN rm -rf /build /branchname
 ########################################
 ##  Get and build miscellaneous sources
 ########################################
-# rest services
+# rest services 
+
 COPY rest $REST_SERVICES_DIR
 RUN $REST_SERVICES_DIR/getSourceCodeRest.sh $REST_SERVICES_DIR
 
@@ -146,17 +147,18 @@ ENV CLASSPATHFILE $EXEC_DIR/classpathfile
 # initialization flag file
 # for driver.sh init
 ENV INITIALIZATION_FILE="$EXEC_DIR/.initialized"
-# for total initialization of the container
-ENV GLOBAL_INITIALIZATION_FILE="${INITIALIZATION_FILE}.global"
+ENV ERROR_FILE="/error.log"
+ENV HEALTHCHECK_FILE="/healthcheck"
 # create folders, copy execution and auxilliary scripts
 RUN mkdir -p "$EXEC_DIR"
 COPY exec/*  $EXEC_DIR/
+RUN chmod +x $EXEC_DIR/*
 
 # copy the entrypoint driver script and utility scripts
-COPY driver.sh setprops.sh setsources.sh setAuth.sh skel.sh healthcheck.sh entrypoint.sh /
+COPY driver.sh setprops.sh setsources.sh setAuth.sh skel.sh healthcheck.sh entrypoint.sh error.sh /
 
 # set execution bit 
-RUN chmod +x $EXEC_DIR/* /driver.sh
+RUN chmod +x /*.sh
 
 # store the environment variables on a file to help with
 # cron-scheduled runs

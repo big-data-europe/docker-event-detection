@@ -67,6 +67,10 @@ for p in $(ls $REST_SERVICES_DIR -1); do
 	if [ -f "install.sh" ]; then 
 		sed -i 's/sudo //g' ./install.sh
 		./install.sh; 
+		if [ $? -eq 1 ] ; then
+			echo "Failed to install twitterRest service."
+			return 1
+		fi
 	fi
 done
 

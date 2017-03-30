@@ -16,7 +16,7 @@ if [ ! -f "$REST_SERVICES_DIR/$restName/run.sh" ]; then
 	>&2 echo "Rest service execution script [$REST_SERVICES_DIR/$restName/run.sh] not found." 
 	exit 1
 fi
-
+ 
 $REST_SERVICES_DIR/$restName/run.sh
 
 echo "-Done running BDE Event detection REST script with argument [$1]."; echo
