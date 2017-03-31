@@ -24,6 +24,7 @@ services:
         - twitter_keysec=
         - twitter_tok=
         - twitter_toksec=
+        - extractor_auth=
     depends_on:
       cassandra-cluster-2:
         condition: service_healthy
