@@ -32,8 +32,5 @@ services:
       lookupservice:
         condition: service_healthy
     depends_on:
-      strabon:
-        condition: service_healthy
-    depends_on:
       geotriples:
         condition: service_healthy
