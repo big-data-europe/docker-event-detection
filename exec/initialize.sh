@@ -84,6 +84,12 @@ else
     cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/locextractor.properties" "$locextractorprops"
 fi
 
+# check supplied restful extraction authentication var
+if [ ! -z $EXTRACTOR_AUTH ]; then 
+	echo "Setting location extractor authentication from docker-compose variable."
+	sed -i "s/auth=/auth=$EXTRACTOR_AUTH/g" "$locextractorprops"
+fi
+
 # twitter
 
 twitterprops="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"

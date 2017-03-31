@@ -30,7 +30,7 @@ function twitter_usage
 }
 
 echo "Setting repository connection parameters and twitter credentials. ($0)"
-noConnectionFlag=1
+
 ## TWITTER
 # format expected:
 # twitterConsumerKey
@@ -38,13 +38,26 @@ noConnectionFlag=1
 # twitterAccessTokken
 # twitterAccessTokkenSecret
 twitterfile="$CONNECTIONS_CONFIG_FOLDER/twitter.conf"
-if [ -f "$twitterfile" ]; then
+if [ -f "$twitterfile" ] ; then
 	if [ "$(grep -c ^  $twitterfile)" -eq 4 ]; then
 		twitterConsumerKey="$(cat $twitterfile | grep -v '#' | head -1 | tail -1)"
 		twitterConsumerKeySecret="$(cat $twitterfile | grep -v '#' | head -2 | tail -1)"
 		twitterAccessTokken="$(cat $twitterfile | grep -v '#' | head -3 | tail -1)"
 		twitterAccessTokkenSecret="$(cat $twitterfile | grep -v '#' | head -4 | tail -1)"
+	else
+		twitter_usage
+	fi
+fi
+# if all relevant environment variables were supplied over the compose yml, override anything else
+if [ ! -z $TWITTER_KEY ] && [ ! -z $TWITTER_KEYSEC ] && [ ! -z $TWITTER_TOK ] && [ ! -z $TWITTER_TOKSEC ]; then
+		echo "Using docker-compose supplied twitter variables."
+		twitterConsumerKey="$TWITTER_KEY"
+		twitterConsumerKeySecret="$TWITTER_KEYSEC"
+		twitterAccessTokken="$TWITTER_TOK"
+		twitterAccessTokkenSecret="$TWITTER_TOKSEC"
+fi
 
+if [ ! -z $twitterConsumerKey ]; then
 
 		printf "Setting twitter :\n"
 		printf "\tkey: [%s]\n" "$twitterConsumerKey"
@@ -52,24 +65,18 @@ if [ -f "$twitterfile" ]; then
 		printf "\tacctoken: [%s]\n" "$twitterAccessTokken"
 		printf "\tacctokensecret: [%s]\n" "$twitterAccessTokkenSecret"
 
-	        twitterpropsfile="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
-	        if [ ! -f "$twitterpropsfile" ]; then
-	                >&2 echo "File [$twitterpropsfile] not found "
-	        else
-	        # set the twitter credentials
-	                sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$twitterpropsfile"
-	                sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$twitterpropsfile"
-	                sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$twitterpropsfile"
-	                sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$twitterpropsfile"
-	        fi
-	        noConnectionFlag=0
-	else
-		twitter_usage
-	fi
-
-
+        twitterpropsfile="$BDE_ROOT_DIR/BDEEventDetection/BDETwitterListener/res/twitter.properties"
+        if [ ! -f "$twitterpropsfile" ]; then
+                >&2 echo "File [$twitterpropsfile] not found "
+        else
+        # set the twitter credentials
+                sed -i "s/twitterConsumerKey=.*/twitterConsumerKey=$twitterConsumerKey/g" "$twitterpropsfile"
+                sed -i "s/twitterConsumerKeySecret=.*/twitterConsumerKeySecret=$twitterConsumerKeySecret/g" "$twitterpropsfile"
+                sed -i "s/twitterAccessTokken=.*/twitterAccessTokken=$twitterAccessTokken/g" "$twitterpropsfile"
+                sed -i "s/twitterAccessTokkenSecret=.*/twitterAccessTokkenSecret=$twitterAccessTokkenSecret/g" "$twitterpropsfile"
+        fi
 else
-	echo "No twitter connection configuration supplied at [$twitterfile]."
+	echo "No twitter connection configuration supplied at [$twitterfile] or via compose viariables."
 fi
 
 
@@ -87,11 +94,26 @@ cassandrafile="$CONNECTIONS_CONFIG_FOLDER/cassandra.conf"
 if [  -f "$cassandrafile" ] ; then
 	if [ "$(grep -c ^  $cassandrafile)" -eq 4 ]; then
 
-	cassandraHost="$(cat $cassandrafile | grep -v '#' | head -1 | tail -1)"
-	cassandraPort="$(cat $cassandrafile | grep -v '#' | head -2 | tail -1)"
-	cassandraKeyspace="$(cat $cassandrafile | grep -v '#' | head -3 | tail -1)"
-	cassandraCluster="$(cat $cassandrafile | grep -v '#' | head -4 | tail -1)"
+		cassandraHost="$(cat $cassandrafile | grep -v '#' | head -1 | tail -1)"
+		cassandraPort="$(cat $cassandrafile | grep -v '#' | head -2 | tail -1)"
+		cassandraKeyspace="$(cat $cassandrafile | grep -v '#' | head -3 | tail -1)"
+		cassandraCluster="$(cat $cassandrafile | grep -v '#' | head -4 | tail -1)"
+	else
+		cassandra_usage
+	fi
+fi
 
+
+# if all relevant environment variables were supplied over the compose yml, override anything else
+if [ ! -z $CASSANDRA_IP ] && [ ! -z $CASSANDRA_PORT ] && [ ! -z $CASSANDRA_KEYSPACE ] && [ ! -z $CASSANDRA_CLUSTER ]; then
+		echo "Using docker-compose supplied cassandra variables."
+		cassandraHost="$CASSANDRA_IP"
+		cassandraPort="$CASSANDRA_PORT"
+		cassandraKeyspace="$CASSANDRA_KEYSPACE"
+		cassandraCluster="$CASSANDRA_CLUSTER"
+fi
+
+if [ ! -z $cassandraHost ]; then
 	printf "\nSetting cassandra:\n"
 	printf "\thost: [%s]\n" "$cassandraHost"
 	printf "\tport: [%s]\n" "$cassandraPort"
@@ -108,14 +130,12 @@ if [  -f "$cassandrafile" ] ; then
 		sed -i "s/cassandra_keyspace.*/cassandra_keyspace=$cassandraKeyspace/g" $f
 		sed -i "s/cassandra_cluster_name.*/cassandra_cluster_name=$cassandraCluster/g" $f
 	done
-	else
-		cassandra_usage
-	fi
-
 
 else
-	echo "No cassandra connection configuration supplied at [$cassandrafile]"
+	echo "No cassandra connection configuration supplied at [$cassandrafile] or via compose viariables."
 fi
+
+
 
 # MYSQL
 # expecting format:
@@ -153,10 +173,9 @@ if [ -f "$mysqlfile" ]; then
 	fi
 
 	else
-		echo "No mysql connection configuration supplied at [$mysqlfile]"
+		# mysql minimally supported, commenting out
+		#echo "No mysql connection configuration supplied at [$mysqlfile]"
+		echo ""
 fi
 
-if [ $noConnectionFlag ]; then
-	echo >&2 "No connection configuration supplied!"
-fi
 echo "-Done setting connection information."; echo

@@ -155,7 +155,7 @@ COPY exec/*  $EXEC_DIR/
 RUN chmod +x $EXEC_DIR/*
 
 # copy the entrypoint driver script and utility scripts
-COPY driver.sh setprops.sh setsources.sh setAuth.sh skel.sh healthcheck.sh entrypoint.sh error.sh /
+COPY driver.sh setprops.sh setsources.sh setAuth.sh skel.sh healthcheck.sh entrypoint.sh error.sh log.sh /
 
 # set execution bit 
 RUN chmod +x /*.sh

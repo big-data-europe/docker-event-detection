@@ -30,9 +30,9 @@ else
 	echo "Finished entrypoint script execution"
 	echo "===================================="
 	echo;
-	echo "Starting to monitor latest logs at [$LOG_DIR] directory."
-	
-	tail -f "$( find $LOG_DIR -type f | head -1 )"
+	echo "Starting to monitor latest logfile at [$LOG_DIR] directory:"
+	echo "---------------------------------------------------------------"
+	tail -n 20 -f "$( find $LOG_DIR -type f | head -1 )"
 	#tail -f "$HEALTHCHECK_FILE"
 
 fi

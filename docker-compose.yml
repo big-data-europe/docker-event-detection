@@ -16,14 +16,15 @@ services:
      - "8081:8080"
     environment:
         - "constraint:node==slave3"
-        - cassandra_ip=
-        - cassandra_port=
-        - cassandra_keyspace=
-        - cassandra_cluster=
-        - twitter_key=
-        - twitter_keysec=
-        - twitter_tok=
-        - twitter_toksec=
+        - CASSANDRA_IP=
+        - CASSANDRA_PORT=
+        - CASSANDRA_KEYSPACE=
+        - CASSANDRA_CLUSTER=
+        - TWITTER_KEY=
+        - TWITTER_KEYSEC=
+        - TWITTER_TOK=
+        - TWITTER_TOKSEC=
+        - EXTRACTOR_AUTH=
     depends_on:
       cassandra-cluster-2:
         condition: service_healthy
