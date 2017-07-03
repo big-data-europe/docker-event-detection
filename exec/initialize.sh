@@ -75,14 +75,25 @@ sed -i "s<sentence_splitter_model=.*<sentence_splitter_model=$BDE_ROOT_DIR/BDEEv
 sed -i "s<polygon_extraction_url=.*<polygon_extraction_url=http://teleios4.di.uoa.gr:8080/changeDetection/location/geocode<g" "$locationprops"
 sed -i "s<polygon_extraction_impl=.*<polygon_extraction_impl=remote<g" "$locationprops"
 
-# extractor 
+# location extractor 
 locextractorprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/locextractor.properties";
 if [ -f "$SUPPLIED_LOCATION_EXTRACTOR_FILE" ]; then
         echo "Fetching user supplied location extractor."
         cp "$SUPPLIED_LOCATION_EXTRACTOR_FILE" "$locextractorprops"
 else
-    cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/locextractor.properties" "$locextractorprops"
+    cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/extractor.properties" "$locextractorprops"
 fi
+
+# entity extractor
+entextractorprops="$BDE_ROOT_DIR/BDEEventDetection/BDELocationExtraction/res/entextractor.properties";
+if [ -f "$SUPPLIED_ENTITY_EXTRACTOR_FILE" ]; then
+        echo "Fetching user supplied entity extractor."
+        cp "$SUPPLIED_ENTITY_EXTRACTOR_FILE" "$entextractorprops"
+else
+    cp "$BDE_ROOT_DIR/BDEEventDetection/skel_property_files/extractor.properties" "$entextractorprops"
+fi
+
+
 
 # check supplied restful extraction authentication var
 if [ ! -z $EXTRACTOR_AUTH ]; then 

@@ -1,0 +1,9 @@
+# endpoints:
+curl -X POST -d @lookup.json  http://lookupservice:8080/lookupservice/geocode -H "Content-Type:application/json" -H "Accept: application/json"
+
+# Geotriples-changes(το χρησιμοποιεί ο ChangeDetector):
+curl -X POST -d @changes.json http://geotriples:8080/geotriples/changes -H "Content-Type:application/json" -H "Accept: application/json"
+
+# Geotriples-events (το χρησιμοποιεί ο Event Detector)
+curl -X POST -d @events.json http://geotriples:8080/geotriples/event -H "Content-Type:application/json" -H "Accept: application/json"
+
