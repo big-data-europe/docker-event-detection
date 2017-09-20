@@ -35,8 +35,8 @@ RUN apt-get -qq update
 RUN apt-get -qq install -y git curl cron
 
 # for debugging, TODO Remove
-RUN echo >&2 "*******************" && echo >&2 "Installing nano,netcat for debugging, remove @ production version."
-RUN apt-get -qq install -y nano netcat
+RUN echo >&2 "*******************" && echo >&2 "Installing text editor and netcat for debugging, remove @ production version."
+RUN apt-get -qq install -y emacs netcat
 
   
 # Make and define working directory.
